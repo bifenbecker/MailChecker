@@ -4,3 +4,10 @@ __pycache__/
 build/
 dist/
 main.spec
+test.py
+mail.txt
+form.ui
+TabDrag.py
+1.ui
+ui.py
+USERS_MAILS.db
