@@ -1,8 +1,10 @@
-import App,sys
+import App,sys,asyncio
 from PyQt5 import QtWidgets
 
-if __name__ == '__main__':
+async def main():
     app = QtWidgets.QApplication(sys.argv)
     window = App.App()
     sys.exit(app.exec_())
-    # main()
+
+if __name__ == '__main__':
+    asyncio.run(main())
