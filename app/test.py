@@ -1,9 +1,14 @@
 import poplib
+import imaplib
 
-mail = poplib.POP3_SSL('pop.poortenaar.com')
-mail.user('info@poortenaar.com')
-mail.pass_('78jeroen')
-print(mail.list())
+# mail = poplib.POP3_SSL('pop.poortenaar.com')
+# mail.user('info@poortenaar.com')
+# mail.pass_('78jeroen')
+# print(mail.list())
+
+mail = imaplib.IMAP4_SSL('imap.poortenaar.com')
+mail.login('info@poortenaar.com', '78jeroen')
+print(mail.list()[0])
 
 # # Выводит список папок в почтовом ящике.
 # mail.select("inbox")  # Подключаемся к папке "входящие".
