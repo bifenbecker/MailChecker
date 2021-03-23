@@ -2,34 +2,37 @@ import sqlite3,ExceptionBreak,imaplib,asyncio
 
 class MailData():
 
-    DB_NAME = "MAILS.db"
+    # def __init__(self,mails):
+    #     try:
+    #         self.add_to_data_base(mails)
+    #     except:
+    #         raise ExceptionBreak("Failed to load records")
 
-    def __init__(self,mails):
-        try:
-            self.add_to_data_base(mails)
-            self.IMAP_connection()
-        except:
-            raise ExceptionBreak("DB error")
-
-    def add_to_data_base(self,mails):
-        connection = sqlite3.connect(self.DB_NAME)
+    @staticmethod
+    def add_to_data_base(line,DB_NAME="MAILS.db"):
+        connection = sqlite3.connect(DB_NAME)
         cursor = connection.cursor()
 
-        cursor.execute("""CREATE TABLE IF NOT EXISTS mails(mail TEXT, password TEXT)""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS mails(mail TEXT, password TEXT, valid INT)""")
         connection.commit()
 
-
-        for mail in mails:
+        if ":" in line and "@" in line.split(":")[0]:
+            mail = [line.split(":")[0], line.split(":")[-1]]
             sql = "SELECT mail FROM mails WHERE mail = ?"
             cursor.execute(sql, (mail[0],))
             DB = cursor.fetchall()
-            if DB:
-                continue
-            else:
-                cursor.execute("INSERT INTO mails VALUES (?,?)", mail)
+            if not DB:
+                imap_conn = int(MailData.check_imap_connection(mail))
+                mail.append(imap_conn)
+                cursor.execute("INSERT INTO mails VALUES (?,?,?)", mail)
+        else:
+            cursor.execute("INSERT INTO mails VALUES (?,?,?)", (line,"", 0))
+
+
         connection.commit()
 
-    async def check_imap_connection(self,mail):
+    @staticmethod
+    def check_imap_connection(mail):
         imap_user = mail[0]
         imap_password = mail[1]
         conn = imaplib.IMAP4_SSL("imap.{}".format(imap_user.split("@")[-1]))
@@ -46,8 +49,10 @@ class MailData():
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM mails")
         mails = cursor.fetchall()
+
         for mail in mails:
-            await check_imap_connection(mail)
+            self.check_imap_connection(mail)
+            await asyncio.sleep(0.01)
 
         print(success,len(mails)-success)
 

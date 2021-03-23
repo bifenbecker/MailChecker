@@ -1,10 +1,12 @@
-import App,sys,asyncio
+import App,sys,asyncio,PrevLoadWindow,DialogWindow
 from PyQt5 import QtWidgets
 
-async def main():
+def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = App.App()
+    # window = App.App()
+    window = PrevLoadWindow.App()
     sys.exit(app.exec_())
 
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
