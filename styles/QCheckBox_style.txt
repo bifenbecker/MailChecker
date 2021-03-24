@@ -1,0 +1,6 @@
+QCheckBox{
+    font-family: "Seb Neue Light";
+    src:url(fonts/SebneueLight.otf);
+    font-size: 20px;
+    margin-left: 7px;
+}

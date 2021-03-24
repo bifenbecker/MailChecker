@@ -1,4 +1,5 @@
-import PyQt5,dialog
+import PyQt5
+from gui import dialog
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 

@@ -1,0 +1,5 @@
+QGroupBox{
+    font-family: "Seb Neue ExtBd";
+    src:url(fonts/SebneueExtrabold.otf);
+    font-size: 14px;
+}

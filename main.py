@@ -3,8 +3,8 @@ from PyQt5 import QtWidgets
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    # window = App.App()
-    window = PrevLoadWindow.App()
+    window = App.App()
+    # window = PrevLoadWindow.App()
     sys.exit(app.exec_())
 
 

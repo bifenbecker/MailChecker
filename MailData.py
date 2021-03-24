@@ -32,6 +32,10 @@ class MailData():
         connection.commit()
 
     @staticmethod
+    def load_imap(mails):
+        pass
+
+    @staticmethod
     def check_imap_connection(mail):
         imap_user = mail[0]
         imap_password = mail[1]
