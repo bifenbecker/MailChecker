@@ -7,3 +7,5 @@ main.spec
 test.py
 mail.txt
 MAILS.db
+db.db
+adb.db

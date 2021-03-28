@@ -12,11 +12,14 @@ class TreadProc(QThread):
         self.args = args[0]
 
     def run(self):
-        proc = 100/len(self.args)
+        asyncio.run(self.load_mails())
+
+    async def load_mails(self):
+        proc = 100 / len(self.args)
         chv = proc
         for i in range(len(self.args)):
-            MailData.MailData.add_to_data_base(self.args[i].strip())
-            # threading.Thread(target=MailData.MailData.add_to_data_base,args=self.args[i].strip(), daemon=True).start()
-            QThread.msleep(10)
+            start = time.time()
+            await MailData.MailData.load_imap(self.args[i].strip())
+            print(time.time() - start)
             self.change_value.emit(chv)
             chv += proc

@@ -1,5 +1,4 @@
 import time
-
 import PyQt5,sys,MailData,ExceptionBreak,DialogWindow
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt

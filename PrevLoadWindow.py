@@ -1,3 +1,5 @@
+import asyncio
+
 import PyQt5,DialogWindow,MailData,ThreadProc
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
@@ -26,10 +28,12 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         fname = res[0]
         if fname.split(".")[-1] == "txt":
             with open(fname) as file:
+                self.dialog_warning.setWindowModality(Qt.ApplicationModal)
                 self.dialog_warning.set_mes("File is opened\nLines:{0}".format(len(file.readlines())))
                 self.dialog_warning.show()
                 self.f = fname
         elif res[1] != "" and fname.split(".")[-1] != "text":
+            self.dialog_warning.setWindowModality(Qt.ApplicationModal)
             self.dialog_warning.set_mes("File is not .txt")
             self.dialog_warning.show()
 
@@ -42,6 +46,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
                     self.thread.finished.connect(self.go_main_window)
                     self.thread.start()
         else:
+            self.dialog_warning.setWindowModality(Qt.ApplicationModal)
             self.dialog_warning.set_mes("Input link or choose file")
             self.dialog_warning.show()
 
@@ -51,6 +56,9 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.go_main_window)
         self.thread = None
+        self.dialog_warning.set_mes("Mails were loaded")
+        self.dialog_warning.show()
+        self.close()
 
     def set_progress_bar(self,value):
         self.progressBar.setValue(value)
