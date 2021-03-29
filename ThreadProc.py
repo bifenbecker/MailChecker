@@ -1,6 +1,7 @@
 import threading
 import time,asyncio
 from PyQt5.QtCore import QThread, pyqtSignal
+from multiprocessing import Process,Lock
 import MailData
 
 
@@ -12,14 +13,18 @@ class TreadProc(QThread):
         self.args = args[0]
 
     def run(self):
-        asyncio.run(self.load_mails())
-
-    async def load_mails(self):
         proc = 100 / len(self.args)
         chv = proc
-        for i in range(len(self.args)):
+        preccess = [Process(target=MailData.MailData.load_imap, args=(arg.strip(),)) for arg in self.args]
+        for process in preccess:
             start = time.time()
-            await MailData.MailData.load_imap(self.args[i].strip())
+            process.start()
             print(time.time() - start)
             self.change_value.emit(chv)
             chv += proc
+        for process in preccess:
+            process.join()
+
+    def stop(self):
+        self.exec_()
+

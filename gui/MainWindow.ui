@@ -76,35 +76,35 @@
            <property name="leftMargin">
             <number>4</number>
            </property>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Valid:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
+           <item row="2" column="1">
             <widget class="QLabel" name="label_Accounts">
              <property name="text">
-              <string>TextLabel</string>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Checked:</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="8" column="0">
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>Unvalid:</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Valid:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QLabel" name="label">
              <property name="font">
               <font>
@@ -128,64 +128,92 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="4" column="1">
             <widget class="QLabel" name="label_Checked">
              <property name="text">
-              <string>TextLabel</string>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_Valid">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
+           <item row="8" column="1">
             <widget class="QLabel" name="label_Unvalid">
              <property name="text">
-              <string>TextLabel</string>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="Line" name="line_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
+           <item row="3" column="0">
             <widget class="Line" name="line_4">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="5" column="1">
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="label_Valid">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
             <widget class="Line" name="line_5">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="7" column="0">
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_Active_Session">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
             <widget class="Line" name="line_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Active session</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="Line" name="line_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_8">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -197,14 +225,66 @@
        </item>
        <item>
         <widget class="QTableWidget" name="tableWidget">
+         <property name="horizontalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
+         <property name="showGrid">
+          <bool>true</bool>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>100</number>
+         </attribute>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>70</number>
+         </attribute>
+         <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
          <column>
           <property name="text">
-           <string>1</string>
+           <string>Email</string>
+          </property>
+          <property name="font">
+           <font>
+            <family>Seb Neue Light</family>
+            <pointsize>12</pointsize>
+           </font>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>2</string>
+           <string>Password</string>
+          </property>
+          <property name="font">
+           <font>
+            <family>Seb Neue Light</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Request</string>
+          </property>
+          <property name="font">
+           <font>
+            <family>Seb Neue Light</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Amount</string>
+          </property>
+          <property name="font">
+           <font>
+            <family>Seb Neue Light</family>
+            <pointsize>12</pointsize>
+           </font>
           </property>
          </column>
         </widget>
@@ -303,11 +383,23 @@ margin-left: 10px;</string>
            <rect>
             <x>0</x>
             <y>20</y>
-            <width>521</width>
+            <width>561</width>
             <height>191</height>
            </rect>
           </property>
-          <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,2">
+          <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="1,2">
+           <property name="leftMargin">
+            <number>10</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <item row="0" column="1" rowspan="4">
+            <widget class="QPlainTextEdit" name="plainTextEdit_Requests"/>
+           </item>
            <item row="0" column="0">
             <widget class="QComboBox" name="comboBox_Requests">
              <item>
@@ -327,21 +419,36 @@ margin-left: 10px;</string>
              </item>
             </widget>
            </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButton_Search">
+             <property name="font">
+              <font>
+               <family>Seb Neue ExtBd</family>
+               <pointsize>13</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Search</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0">
-            <spacer name="horizontalSpacer">
+            <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
-               <height>20</height>
+               <width>20</width>
+               <height>40</height>
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="0" column="1" rowspan="2">
-            <widget class="QPlainTextEdit" name="plainTextEdit_Requests"/>
            </item>
           </layout>
          </widget>
@@ -372,6 +479,9 @@ margin-left: 10px;</string>
     <property name="title">
      <string>Choose session</string>
     </property>
+    <addaction name="actionAdd_Session"/>
+    <addaction name="actionDelete_Session"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuLoad"/>
    <addaction name="menuChoose_session"/>
@@ -380,6 +490,16 @@ margin-left: 10px;</string>
   <action name="actionLoad_mails">
    <property name="text">
     <string>Load mails</string>
+   </property>
+  </action>
+  <action name="actionAdd_Session">
+   <property name="text">
+    <string>Add Session</string>
+   </property>
+  </action>
+  <action name="actionDelete_Session">
+   <property name="text">
+    <string>Delete Session</string>
    </property>
   </action>
  </widget>

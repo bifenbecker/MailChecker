@@ -32,7 +32,7 @@ class MailData():
         connection.commit()
 
     @staticmethod
-    async def load_imap(mail):
+    def load_imap(mail):
         DB_NAME = "adb.db"
         connection = sqlite3.connect(DB_NAME)
         cursor = connection.cursor()
@@ -46,16 +46,15 @@ class MailData():
             cursor.execute(sql, (mail[0],))
             DB = cursor.fetchall()
             if not DB:
-                conn = await MailData.check_imap_connection((user_mail,user_passwd))
+                conn = MailData.check_imap_connection((user_mail,user_passwd))
                 db_data = (user_mail,user_passwd,int(conn))
-                print(db_data)
                 cursor.execute("INSERT INTO mails VALUES (?,?,?)",db_data)
         else:
             cursor.execute("INSERT INTO mails VALUES (?,?,?)", (mail,"", 0))
 
 
     @staticmethod
-    async def check_imap_connection(mail):
+    def check_imap_connection(mail):
         imap_user = mail[0]
         imap_password = mail[1]
         try:

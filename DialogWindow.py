@@ -9,6 +9,7 @@ class Dialog(QtWidgets.QWidget, dialog.Ui_Dialog):
         self.setupUi(self)
         self.pushButton_Ok.clicked.connect(self.close)
         self.pushButton_Cancel.clicked.connect(self.close)
+        self.setWindowTitle("Warning")
 
     def set_mes(self,mes):
         self.message.setText(mes)

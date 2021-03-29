@@ -9,9 +9,10 @@ from gui import prev_window
 
 class App(QtWidgets.QWidget, prev_window.Ui_Form):
     resized = QtCore.pyqtSignal()
-    def __init__(self):
+    def __init__(self,path):
         super(App, self).__init__()
         self.setupUi(self)
+        self.path = path
         self.thread = None
         self.f = None
         self.dialog_warning = DialogWindow.Dialog()
@@ -20,7 +21,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         self.pushButton_load_file.clicked.connect(self.load_file)
         self.pushButton_load_data_file.clicked.connect(self.load_data)
         self.pushButton_load_data_link.clicked.connect(self.load_data)
-        self.pushButton_Cancel_Load.clicked.connect(self.close)
+        self.pushButton_Cancel_Load.clicked.connect(self.cancel_load)
 
 
     def load_file(self):
@@ -50,6 +51,10 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
             self.dialog_warning.set_mes("Input link or choose file")
             self.dialog_warning.show()
 
+    def cancel_load(self):
+        self.thread.stop()
+        self.thread = None
+        self.close()
 
 
     def go_main_window(self):
