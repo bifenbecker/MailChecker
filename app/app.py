@@ -1,5 +1,7 @@
 from emaillib.imap import IMAP
+from emaillib.database import SQLiteDB
 import emaillib
+
 
 
 def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> list:
@@ -26,7 +28,7 @@ for account in accounts_list:
     except emaillib.imap.Error:
         continue
 
-    # db = SQLiteDB("email_db")
+    db = SQLiteDB("email_db")
 
     print(f"login: {account['login']}")
     print(f"password: {account['password']}")
@@ -36,14 +38,14 @@ for account in accounts_list:
 
         print(message)
 
-        # fields_list = (message["Folder"],
-        #                message["Subject"],
-        #                message["Content-Extension"],
-        #                message["Content"],)
-        #
-        # db.update_table(fields_list, table_name="messages")
+        fields_list = (message["Date"],
+                       message["Subject"],
+                       message["Content-Extension"],
+                       message["Content"],)
 
-    # for message in db.get_table("messages"):
-    #     print(message)
+        db.update_table(fields_list, table_name="messages")
+
+    for message in db.get_table("messages"):
+        print(message)
 
     print()

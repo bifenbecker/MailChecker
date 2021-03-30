@@ -1,1 +1,1 @@
-__all__ = ["imap"]
+__all__ = ["imap", "database"]
