@@ -91,9 +91,10 @@ class IMAP:
                 if part.get_content_maintype() == 'multipart':
                     continue
 
-            message["Date"] = msg["Date"]
+            message["Date"] = str(msg["Date"])
+            message["From"] = msg["From"]
             message["Subject"] = self._clear_subject(msg["Subject"])
-            message["Content"] = result.get_payload(decode=True)
+            message["Content"] = str(result.get_payload(decode=True))
             message["Content-Extension"] = mimetypes.guess_extension(result.get_content_type())
 
             # message["Raw-Message"] = msg

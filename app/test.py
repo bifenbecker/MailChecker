@@ -6,9 +6,9 @@ import imaplib
 # mail.pass_('78jeroen')
 # print(mail.list())
 
-mail = imaplib.IMAP4_SSL('imap.poortenaar.com')
-mail.login('info@poortenaar.com', '78jeroen')
-print(mail.list()[0])
+# mail = imaplib.IMAP4_SSL('imap.poortenaar.com')
+# mail.login('info@poortenaar.com', '78jeroen')
+# print(mail.list()[0])
 
 # # Выводит список папок в почтовом ящике.
 # mail.select("inbox")  # Подключаемся к папке "входящие".
@@ -287,34 +287,136 @@ def mail_select(mail):
 
 
 # mail_select(imap)
-accounts = []
-with open("mail.txt") as file:
-    raw_accounts = file.read().split('\n')
-
-    for account in raw_accounts:
-        data_list = account.split(':')
-        accounts.append({"user": data_list[0], "password": data_list[1]})
-
-for account in accounts:
-    print(account)
-
-imap = IMAP("ikomicin@gmail.com", "password", secure=True)
-db = SQLiteDB("email_db")
-
-for message in imap.get_messages(_to=5):
-    fields_list = (message["Folder"],
-                   message["Subject"],
-                   message["Content-Extension"],
-                   message["Content"],)
-
-    db.update_table(fields_list, table_name="messages")
-
-for message in db.get_table("messages"):
-    print(message)
+# accounts = []
+# with open("mail.txt") as file:
+#     raw_accounts = file.read().split('\n')
+#
+#     for account in raw_accounts:
+#         data_list = account.split(':')
+#         accounts.append({"user": data_list[0], "password": data_list[1]})
+#
+# for account in accounts:
+#     print(account)
+#
+# imap = IMAP("ikomicin@gmail.com", "password", secure=True)
+# db = SQLiteDB("email_db")
+#
+# for message in imap.get_messages(_to=5):
+#     fields_list = (message["Folder"],
+#                    message["Subject"],
+#                    message["Content-Extension"],
+#                    message["Content"],)
+#
+#     db.update_table(fields_list, table_name="messages")
+#
+# for message in db.get_table("messages"):
+#     print(message)
 
 # path = os.path.join(os.getcwd(), "sessions", name_session)
 #             if not os.path.exists(path):
 #                 os.makedirs(path)
 #                 DB_NAME = os.path.join(path, f'{name_session}.db')
 #                 connection = sqlite3.connect(DB_NAME)
+
+# Импортируем библиотеку, соответствующую типу нашей базы данных
+import sqlite3
+
+# Создаем соединение с нашей базой данных
+# В нашем примере у нас это просто файл базы
+conn = sqlite3.connect('Chinook_Sqlite.sqlite')
+
+# Создаем курсор - это специальный объект который делает запросы и получает их результаты
+cursor = conn.cursor()
+
+# Делаем SELECT запрос к базе данных, используя обычный SQL-синтаксис
+cursor.execute("SELECT Name FROM Artist ORDER BY Name LIMIT 3")
+
+# Получаем результат сделанного запроса
+results = cursor.fetchall()
+results2 = cursor.fetchall()
+
+print(results)   # [('A Cor Do Som',), ('Aaron Copland & London Symphony Orchestra',), ('Aaron Goldberg',)]
+print(results2)  # []
+
+# Делаем INSERT запрос к базе данных, используя обычный SQL-синтаксис
+cursor.execute("insert into Artist values (Null, 'A Aagrh!') ")
+
+# Если мы не просто читаем, но и вносим изменения в базу данных - необходимо сохранить транзакцию
+conn.commit()
+
+# Проверяем результат
+cursor.execute("SELECT Name FROM Artist ORDER BY Name LIMIT 3")
+results = cursor.fetchall()
+print(results)  # [('A Aagrh!',), ('A Cor Do Som',), ('Aaron Copland & London Symphony Orchestra',)]
+
+cursor.execute("""
+  SELECT name
+  FROM Artist
+  ORDER BY Name LIMIT 3
+""")
+
+# C подставновкой по порядку на места знаков вопросов:
+cursor.execute("SELECT Name FROM Artist ORDER BY Name LIMIT ?", ('2'))
+
+# И с использованием именнованных замен:
+cursor.execute("SELECT Name from Artist ORDER BY Name LIMIT :limit", {"limit": 3})
+
+# Обратите внимание, даже передавая одно значение - его нужно передавать кортежем!
+# Именно по этому тут используется запятая в скобках!
+new_artists = [
+    ('A Aagrh!',),
+    ('A Aagrh!-2',),
+    ('A Aagrh!-3',),
+]
+cursor.executemany("insert into Artist values (Null, ?);", new_artists)
+
+cursor.execute("SELECT Name FROM Artist ORDER BY Name LIMIT 3")
+print(cursor.fetchone())    # ('A Cor Do Som',)
+print(cursor.fetchone())    # ('Aaron Copland & London Symphony Orchestra',)
+print(cursor.fetchone())    # ('Aaron Goldberg',)
+print(cursor.fetchone())    # None
+
+# Использование курсора как итератора
+for row in cursor.execute('SELECT Name from Artist ORDER BY Name LIMIT 3'):
+        print(row)
+# ('A Cor Do Som',)
+# ('Aaron Copland & London Symphony Orchestra',)
+# ('Aaron Goldberg',)
+
+# Не забываем закрыть соединение с базой данных
+conn.close()
+
+# Импортируем библиотеку, соответствующую типу нашей базы данных
+# В данном случае импортируем все ее содержимое, чтобы при обращении не писать каждый раз имя библиотеки, как мы делали в первой статье
+import peewee as pw
+
+# Создаем соединение с нашей базой данных
+# В нашем примере у нас это просто файл базы
+# conn = pw.SqliteDatabase('Chinook_Sqlite.sqlite')
+
+
+# Определяем базовую модель о которой будут наследоваться остальные
+class BaseModel(pw.Model):
+    class Meta:
+        database = conn  # соединение с базой, из шаблона выше
+
+
+# Определяем модель исполнителя
+class Artist(BaseModel):
+    artist_id = pw.AutoField(column_name='ArtistId')
+    name = pw.TextField(column_name='Name', null=True)
+
+    class Meta:
+        table_name = 'Artist'
+
+
+conn = pw.SqliteDatabase('Chinook_Sqlite.sqlite')
+
+# Создаем курсор - специальный объект для запросов и получения данных с базы
+cursor = conn.cursor()
+
+# ТУТ БУДЕТ НАШ КОД РАБОТЫ С БАЗОЙ ДАННЫХ
+
+# Не забываем закрыть соединение с базой данных
+conn.close()
 

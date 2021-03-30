@@ -1,17 +1,30 @@
+import os
+
 import sqlite3
+from pony import orm
+# from models import Account, Message
 
 
+db = orm.Database()
+
+
+# TODO: Solve problem with class or delete it and use functions
 class SQLiteDB:
     db_count = 0
     table_count = 0
 
-    def __init__(self, db_name: str = ""):
+    def __init__(self, provider: str = "sqlite", path: str = "", session_name: str = "", create_db: bool = False):
 
-        if not db_name:
-            db_name = f"db_{SQLiteDB.db_count}"
+        if not session_name:
+            session_name = f"db_{SQLiteDB.db_count}"
 
-        self.connection = sqlite3.connect(db_name)
-        self.cursor = self.connection.cursor()
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        db_name = os.path.join(path, f'{session_name}.db')
+
+        db.bind(provider, db_name, create_db)
+        db.generate_mapping(create_tables=True)
 
         SQLiteDB.db_count += 1
 
@@ -26,7 +39,7 @@ class SQLiteDB:
             table_name = f"table_{SQLiteDB.table_count}"
 
         self.cursor.execute(f"""CREATE TABLE IF NOT EXISTS {table_name}
-                                (folder text, subject text, content text, content_extension text)""")
+                                (date_ text, subject text, content text, content_extension text)""")
 
         print(fields[-1])
         if not self.exists(table_name, "content", fields[-1]):
