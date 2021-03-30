@@ -298,7 +298,7 @@ with open("mail.txt") as file:
 for account in accounts:
     print(account)
 
-imap = IMAP("ikomicin@gmail.com", "NikoNikoNi4", secure=True)
+imap = IMAP("ikomicin@gmail.com", "password", secure=True)
 db = SQLiteDB("email_db")
 
 for message in imap.get_messages(_to=5):

@@ -26,7 +26,10 @@ class IMAP:
         else:
             self.connection = imaplib.IMAP4(server)
 
-        self.connection.login(address, password)
+        try:
+            self.connection.login(address, password)
+        except Exception:
+            raise Error("Authentication failed")
 
     @staticmethod
     def _clear_subject(subject: str, bad_strings: tuple = (), bad_symbols: str = '/:*?"<>|') -> str:
@@ -100,3 +103,8 @@ class IMAP:
                 self.messages.append(message)
 
         return self.messages
+
+
+class Error(Exception):
+    def __init__(self, text):
+        self.text = text
