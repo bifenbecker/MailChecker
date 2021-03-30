@@ -224,67 +224,34 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="tableWidget">
-         <property name="horizontalScrollMode">
-          <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <widget class="QTreeWidget" name="treeWidget">
+         <property name="font">
+          <font>
+           <family>Seb Neue Light</family>
+           <pointsize>12</pointsize>
+          </font>
          </property>
-         <property name="showGrid">
-          <bool>true</bool>
-         </property>
-         <attribute name="horizontalHeaderDefaultSectionSize">
-          <number>100</number>
-         </attribute>
-         <attribute name="horizontalHeaderMinimumSectionSize">
-          <number>70</number>
-         </attribute>
-         <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="horizontalHeaderStretchLastSection">
+         <attribute name="headerCascadingSectionResizes">
           <bool>true</bool>
          </attribute>
          <column>
           <property name="text">
            <string>Email</string>
           </property>
-          <property name="font">
-           <font>
-            <family>Seb Neue Light</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
          </column>
          <column>
           <property name="text">
-           <string>Password</string>
-          </property>
-          <property name="font">
-           <font>
-            <family>Seb Neue Light</family>
-            <pointsize>12</pointsize>
-           </font>
+           <string>New Column</string>
           </property>
          </column>
          <column>
           <property name="text">
            <string>Request</string>
           </property>
-          <property name="font">
-           <font>
-            <family>Seb Neue Light</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
          </column>
          <column>
           <property name="text">
            <string>Amount</string>
-          </property>
-          <property name="font">
-           <font>
-            <family>Seb Neue Light</family>
-            <pointsize>12</pointsize>
-           </font>
           </property>
          </column>
         </widget>
@@ -477,7 +444,7 @@ margin-left: 10px;</string>
    </widget>
    <widget class="QMenu" name="menuChoose_session">
     <property name="title">
-     <string>Choose session</string>
+     <string>Select session</string>
     </property>
     <addaction name="actionAdd_Session"/>
     <addaction name="actionDelete_Session"/>

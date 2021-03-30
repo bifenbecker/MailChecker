@@ -42,7 +42,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         if self.f is not None:
             with open(self.f) as file:
                 if self.thread is None:
-                    self.thread = ThreadProc.TreadProc(file.readlines())
+                    self.thread = ThreadProc.TreadProc(path=self.path,args=file.readlines())
                     self.thread.change_value.connect(self.set_progress_bar)
                     self.thread.finished.connect(self.go_main_window)
                     self.thread.start()
@@ -61,6 +61,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.go_main_window)
         self.thread = None
+        self.dialog_warning.setWindowTitle("Success")
         self.dialog_warning.set_mes("Mails were loaded")
         self.dialog_warning.show()
         self.close()

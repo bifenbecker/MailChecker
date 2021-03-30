@@ -8,18 +8,17 @@ import MailData
 class TreadProc(QThread):
     change_value = pyqtSignal(float)
 
-    def __init__(self,*args):
+    def __init__(self,path,args):
         super().__init__()
-        self.args = args[0]
+        self.args = args
+        self.path = path
 
     def run(self):
         proc = 100 / len(self.args)
         chv = proc
-        preccess = [Process(target=MailData.MailData.load_imap, args=(arg.strip(),)) for arg in self.args]
+        preccess = [Process(target=MailData.MailData.get_mails, args=(arg.strip(),self.path,)) for arg in self.args]
         for process in preccess:
-            start = time.time()
             process.start()
-            print(time.time() - start)
             self.change_value.emit(chv)
             chv += proc
         for process in preccess:

@@ -29,11 +29,14 @@ class App(QtWidgets.QWidget, add_session.Ui_Form):
             path = os.path.join(os.getcwd(), "sessions",name_session)
             if not os.path.exists(path):
                 os.makedirs(path)
-                DB_NAME = os.path.join(path,f'{name_session}.db')
-                connection = sqlite3.connect(DB_NAME)
-                cursor = connection.cursor()
-                cursor.execute("""CREATE TABLE IF NOT EXISTS mails(mail TEXT, password TEXT, valid INT)""")
-                connection.commit()
+
+                #Create file db
+                # DB_NAME = os.path.join(path,f'{name_session}.db')
+                # connection = sqlite3.connect(DB_NAME)
+                # cursor = connection.cursor()
+                # cursor.execute("""CREATE TABLE IF NOT EXISTS mails(mail TEXT, password TEXT, valid INT)""")
+                # connection.commit()
+
                 self.action = QtWidgets.QAction(self.win)
                 self.action.setObjectName(name_session)
                 self.action.setText(name_session)

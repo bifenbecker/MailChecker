@@ -1,6 +1,7 @@
 import os
+import sqlite3
 import time
-import PyQt5,sys,MailData,ExceptionBreak,DialogWindow
+import PyQt5,sys,MailData,ExceptionBreak,DialogWindow,MailsWindow
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog
@@ -10,7 +11,6 @@ from gui import MainWindow
 
 
 class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
-
     def __init__(self):
         super(App, self).__init__()
         self.initUi()
@@ -53,26 +53,40 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
     def initUi(self):
         self.setupUi(self)
         self.init_sesions()
+        self.path_session = None
+        self.dialog_warning = DialogWindow.Dialog()
         self.label_style_setup()
         self.groupBox_style_setup()
         self.checkBox_style_setup()
         self.actionLoad_mails.triggered.connect(self.Load)
         self.actionAdd_Session.triggered.connect(self.add_session)
         self.actionDelete_Session.triggered.connect(self.delete_session)
-
-        #tabWidget set default size
-        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)  # !!!
-        self.tableWidget.verticalHeader().setDefaultSectionSize(200)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(200)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(
-            0, QtWidgets.QHeaderView.Fixed)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(
-            1, QtWidgets.QHeaderView.Fixed)
-        #
-
-        self.path_session = None
+        self.treeWidget.itemDoubleClicked.connect(self.show_mails_window)
+        self.pushButton_Search.clicked.connect(self.search)
         self.show()
 
+    def search(self):
+        if self.label_Active_Session.text() == "":
+            self.dialog_warning.setWindowModality(Qt.ApplicationModal)
+            self.dialog_warning.set_mes("Select session")
+            self.dialog_warning.show()
+        else:
+            connection = sqlite3.connect(os.path.join('sessions',self.label_Active_Session.text(),f'{self.label_Active_Session.text()}.db'))
+            cursor = connection.cursor()
+            if self.checkBox_Only_Seen.isChecked():
+                sql = "SELECT * FROM mails WHERE seen = ?"
+                cursor.execute(sql,(1,))
+                result = cursor.fetchall()
+                item = QtWidgets.QTreeWidgetItem()
+                item.setText(0,result[0][0])
+                item.setText(1,result[0][1])
+                item.setText(2,self.checkBox_Only_Seen.text())
+                item.setText(3,str(len(result)))
+                self.treeWidget.addTopLevelItem(item)
+
+    def show_mails_window(self):
+        self.mails_window = MailsWindow.App()
+        self.mails_window.show()
 
     def add_session(self):
         self.add_session_window = AddSessionWindow.App(self)
@@ -89,7 +103,12 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.path_session = os.path.join(os.getcwd(),self.action.objectName())
 
     def Load(self):
-        self.prev_load_menu = PrevLoadWindow.App(self.path_session)
-        self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
-        self.prev_load_menu.show()
+        if self.path_session is not None:
+            self.prev_load_menu = PrevLoadWindow.App(self.label_Active_Session.text())
+            self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
+            self.prev_load_menu.show()
+        else:
+           self.dialog_warning.set_mes("Select or add session")
+           self.dialog_warning.setWindowModality(Qt.ApplicationModal)
+           self.dialog_warning.show()
 
