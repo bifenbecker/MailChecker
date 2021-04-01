@@ -67,11 +67,23 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.pushButton_Search.clicked.connect(self.search)
         self.checkBox_Date.clicked.connect(self.search_btn_enable)
         self.checkBox_Only_Seen.clicked.connect(self.search_btn_enable)
+        self.checkBox_Search.clicked.connect(self.search_btn_enable)
+        self.checkBox_Search.clicked.connect(self.enable_search_lines)
         self.show()
 
 
+    def enable_search_lines(self):
+        if self.checkBox_Search.isChecked():
+            self.lineEdit_Body.setEnabled(True)
+            self.lineEdit_From.setEnabled(True)
+            self.lineEdit_Subject.setEnabled(True)
+        else:
+            self.lineEdit_Body.setEnabled(False)
+            self.lineEdit_From.setEnabled(False)
+            self.lineEdit_Subject.setEnabled(False)
+
     def search_btn_enable(self):
-        if self.checkBox_Date.isChecked() or self.checkBox_Only_Seen.isChecked():
+        if self.checkBox_Date.isChecked() or self.checkBox_Only_Seen.isChecked() or self.checkBox_Search.isChecked():
             self.pushButton_Search.setEnabled(True)
         else:
             self.pushButton_Search.setEnabled(False)
@@ -126,6 +138,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Only_Seen.setEnabled(True)
         self.checkBox_Date.setEnabled(True)
         self.dateEdit_date.setEnabled(True)
+        self.checkBox_Search.setEnabled(True)
         self.action = self.sender()
         self.label_Active_Session.setText(self.action.objectName())
         self.path_session = os.path.join(os.getcwd(),self.action.objectName())
