@@ -2,6 +2,7 @@ import base64
 import mimetypes
 import imaplib
 import email
+import time
 
 
 class IMAP:
@@ -30,6 +31,17 @@ class IMAP:
             self.connection.login(address, password)
         except Exception:
             raise Error("Authentication failed")
+
+    @staticmethod
+    def get_unix_time(date: str) -> int:
+        """Convert date to unix-time
+
+        date can only have '%a, %d %b %Y %H:%M:%S' format"""
+
+        date = date.split(' ')[:5]
+        time_obj = time.strptime(' '.join(date), '%a, %d %b %Y %H:%M:%S')
+
+        return int(time.mktime(time_obj))
 
     @staticmethod
     def _clear_subject(subject: str, bad_strings: tuple = (), bad_symbols: str = '/:*?"<>|') -> str:
@@ -91,14 +103,14 @@ class IMAP:
                 if part.get_content_maintype() == 'multipart':
                     continue
 
-            message["Date"] = str(msg["Date"])
-            message["From"] = msg["From"]
-            message["Subject"] = self._clear_subject(msg["Subject"])
-            message["Content"] = str(result.get_payload(decode=True))
-            message["Content-Extension"] = mimetypes.guess_extension(result.get_content_type())
+            message["date"] = self.get_unix_time(str(msg["Date"]))
+            message["sender"] = msg["From"]
+            message["subject"] = self._clear_subject(msg["Subject"])
+            message["content"] = str(result.get_payload(decode=True))
+            message["content_extension"] = mimetypes.guess_extension(result.get_content_type())
 
-            # message["Raw-Message"] = msg
-            # message["Structure"] = _structure(msg)
+            # message["raw_message"] = msg
+            # message["structure"] = _structure(msg)
 
             if message not in self.messages:
                 self.messages.append(message)

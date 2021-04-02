@@ -2,8 +2,8 @@ import emaillib
 from emaillib.imap import IMAP
 
 from pony import orm
-from database import SQLiteDB
-from models import Account, Message
+from database.models import Account, Message
+from database.database import SQLiteDB
 
 
 def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> list:
@@ -22,66 +22,43 @@ def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> li
 
 
 accounts_list = get_accounts("data\\mails.txt", separator=':')
+sqlite_db = SQLiteDB()
 
 with orm.db_session:
-
     for account in accounts_list[:5]:
-
-        is_valid = True
 
         try:
             imap = IMAP(account['login'], account['password'], secure=True)
+            account['is_valid'] = True
         except emaillib.imap.Error:
-            is_valid = False
+            account['is_valid'] = False
 
-        acc = Account(login=account["login"],
-                      password=account["password"],
-                      valid=is_valid)
+        unique_fields = {
+            'login': account["login"]
+        }
 
-        # TODO: create function to check acc existence
+        acc = sqlite_db.add_in_table(Account, data=account, unique_fields=unique_fields)[1]
 
-        if not is_valid:
+        if not account['is_valid']:
             continue
 
-        # db = SQLiteDB("email_db")
-
-        # print(f"login: {account['login']}")
-        # print(f"password: {account['password']}")
-        # print()
+        print(f"login: {account['login']}")
+        print(f"password: {account['password']}")
+        print()
 
         for message in imap.get_messages(_to=5):
 
-            # print(message)
+            print(message)
+            message["owner"] = acc
 
-            # fields_list = (message["Date"],
-            #                message["Subject"],
-            #                message["Content-Extension"],
-            #                message["Content"],)
-            #
-            # db.update_table(fields_list, table_name="messages")
+            unique_fields = {
+                'sender': message["sender"],
+                'content': message["content"],
+            }
 
-            msg = Message(date=message["Date"],
-                          sender=message["From"],
-                          subject=message["Subject"],
-                          content=message["Content"],
-                          content_extension=message["Content-Extension"],
-                          owner=acc)
+            msg = sqlite_db.add_in_table(Message, data=message, unique_fields=unique_fields)
 
-            # TODO: create function to check existence of msg
-            # if msg in orm.select(m for m in Message)[:]:
-            #     msg.delete()
-            #     continue
+        print()
 
-        # print()
-
-        # for message in db.get_table("messages"):
-        #     print(message)
-
-    # TODO: create function to print db
-    for a in orm.select(a for a in Account)[:]:
-        print(a.login)
-
-        for m in orm.select(m for m in Message if m.owner == a)[:]:
-            print('\t-', m.subject)
-
-    # print()
+sqlite_db.show_table(Account)
+sqlite_db.show_table(Message)
