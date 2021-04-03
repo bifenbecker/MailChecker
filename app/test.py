@@ -479,3 +479,13 @@ def _clear_subject(subject: str, bad_strings: tuple = (), bad_symbols: str = '/:
             subject = subject.replace(symbol, '')
 
     return subject
+
+
+def insert_date(s: str, date: str) -> str:
+    index = ~s[::-1].index('.')
+
+    return f"{s[:index]}_{date}{s[index:]}"
+
+# str_date = datetime.now().strftime("%d.%m.%Y_%H.%M.%S")
+# dir_name = f"{file_name}_{str_date}"
+

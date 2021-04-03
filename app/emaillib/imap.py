@@ -31,8 +31,11 @@ class IMAP:
 
         try:
             self.connection.login(address, password)
-        except Exception:
-            raise Error("Authentication failed")
+        except imaplib.IMAP4.error as err:
+            if "[AUTHENTICATIONFAILED]" in str(err):
+                raise Error("Authentication failed")
+            else:
+                raise imaplib.IMAP4.error(err)
 
     @staticmethod
     def get_unix_time(date: str) -> int:
@@ -76,7 +79,7 @@ class IMAP:
 
         self.connection.select(folder)
 
-        result, data = self.connection.uid('search', None, _filter)
+        result, data = self.connection.uid('search', "", _filter)
         item_list = data[0].split()
 
         if not _to:

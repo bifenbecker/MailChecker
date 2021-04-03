@@ -1,5 +1,4 @@
 from pony import orm
-from database.config import provider, filename, create_db, create_tables
 
 db = orm.Database()
 
@@ -20,7 +19,3 @@ class Message(db.Entity):
     owner = orm.Required(Account)
 
     orm.composite_key(subject, content)
-
-
-db.bind(provider, filename, create_db)
-db.generate_mapping(create_tables=create_tables)

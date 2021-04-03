@@ -1,4 +1,7 @@
 import os
+
+from database.models import db
+
 from pony import orm
 
 
@@ -6,9 +9,9 @@ class SQLiteDB:
     db_count = 0
     table_count = 0
 
-    # TODO: solve problem with __init__ and database location
-    def __init__(self, path: str = "", session_name: str = ""):
-        pass
+    def __init__(self, provider: str, filename: str, create_db: bool, create_tables: bool) -> None:
+        db.bind(provider, filename, create_db)
+        db.generate_mapping(create_tables=create_tables)
 
         # if not session_name:
         #     session_name = f"db_{SQLiteDB.db_count}"
@@ -19,23 +22,23 @@ class SQLiteDB:
         # SQLiteDB.db_count += 1
 
     @orm.db_session
-    def get_entry(self, table: orm.core.EntityMeta, unique_fields: dict) -> bool:
+    def get_entry(self, table: db.Entity, unique_fields: dict) -> bool:
         if table.get(**unique_fields):
             return True
         else:
             return False
 
     @orm.db_session
-    def add_in_table(self, table: orm.core.EntityMeta, data: dict, unique_fields: dict) -> tuple:
+    def add_in_table(self, table: db.Entity, data: dict, unique_fields: dict) -> tuple:
         entry = self.get_entry(table, unique_fields)
 
         if not entry:
             entry = table(**data)
-            return (True, entry)
+            return True, entry
         else:
-            return (False, entry)
+            return False, entry
 
     @orm.db_session
-    def show_table(self, table: orm.core.Entity, end: str = '') -> None:
+    def show_table(self, table: db.Entity, end: str = '') -> None:
         table.select().show()
         print(end=end)
