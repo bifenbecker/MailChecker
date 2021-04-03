@@ -10,19 +10,19 @@
     <x>0</x>
     <y>0</y>
     <width>1149</width>
-    <height>806</height>
+    <height>810</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1149</width>
-    <height>806</height>
+    <height>810</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1149</width>
-    <height>806</height>
+    <height>810</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,16 @@
       <number>5</number>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox_Statistic">
          <property name="font">
@@ -66,9 +75,9 @@
          <widget class="QWidget" name="gridLayoutWidget_3">
           <property name="geometry">
            <rect>
-            <x>0</x>
+            <x>10</x>
             <y>20</y>
-            <width>281</width>
+            <width>361</width>
             <height>411</height>
            </rect>
           </property>
@@ -84,28 +93,28 @@
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="label_checked">
              <property name="text">
               <string>Checked:</string>
              </property>
             </widget>
            </item>
            <item row="8" column="0">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="label_unvalid">
              <property name="text">
               <string>Unvalid:</string>
              </property>
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="label_valid">
              <property name="text">
               <string>Valid:</string>
              </property>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="label_accounts">
              <property name="font">
               <font>
                <family>Seb Neue Light</family>
@@ -199,7 +208,7 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="label_active_session">
              <property name="text">
               <string>Active session</string>
              </property>
@@ -230,6 +239,9 @@
            <family>Seb Neue Light</family>
            <pointsize>12</pointsize>
           </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
          </property>
          <attribute name="headerCascadingSectionResizes">
           <bool>true</bool>
@@ -271,9 +283,9 @@
          <widget class="QWidget" name="gridLayoutWidget">
           <property name="geometry">
            <rect>
-            <x>0</x>
+            <x>10</x>
             <y>20</y>
-            <width>541</width>
+            <width>521</width>
             <height>231</height>
            </rect>
           </property>
@@ -354,7 +366,7 @@
             </spacer>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="label_display_letters_from">
              <property name="text">
               <string>Display letters from</string>
              </property>
@@ -372,9 +384,9 @@
          <widget class="QWidget" name="gridLayoutWidget_2">
           <property name="geometry">
            <rect>
-            <x>0</x>
+            <x>10</x>
             <y>17</y>
-            <width>591</width>
+            <width>571</width>
             <height>231</height>
            </rect>
           </property>
@@ -454,7 +466,7 @@
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
+            <widget class="QLabel" name="label_subject">
              <property name="font">
               <font>
                <family>Seb Neue Light</family>
@@ -467,7 +479,7 @@
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="label_body">
              <property name="font">
               <font>
                <family>Seb Neue Light</family>
@@ -480,7 +492,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_7">
+            <widget class="QLabel" name="label_from">
              <property name="font">
               <font>
                <family>Seb Neue Light</family>
@@ -564,8 +576,15 @@
     <addaction name="actionDelete_Session"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
    <addaction name="menuLoad"/>
    <addaction name="menuChoose_session"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_mails">
@@ -581,6 +600,11 @@
   <action name="actionDelete_Session">
    <property name="text">
     <string>Delete Session</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

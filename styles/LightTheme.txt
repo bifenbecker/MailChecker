@@ -1,0 +1,70 @@
+QCheckBox{
+    font-family: "Seb Neue Light";
+    src:url(fonts/SebneueLight.otf);
+}
+
+QRadioButton{
+    font-size:16px;
+    font-family: "Seb Neue Light";
+    src:url(fonts/SebneueLight.otf);
+}
+
+QGroupBox{
+    font-size: 14px;
+    font-family: "Seb Neue ExtBd";
+    src:url(fonts/SebneueExtrabold.otf);
+    font-size: 14px;
+}
+
+QLabel{
+    font-family: "Seb Neue Light";
+    src:url(fonts/SebneueLight.otf);
+}
+
+QLabel#label_active_session,QLabel#label_accounts,QLabel#label_checked,QLabel#label_valid,QLabel#label_unvalid{
+    font-size: 19px;
+}
+QLabel#label_Active_Session,QLabel#label_Accounts,QLabel#label_Checked,QLabel#label_Valid,QLabel#label_Unvalid{
+    font-size: 19px;
+}
+
+
+QLabel#label_display_letters_from,QLabel#label_from,QLabel#label_subject,QLabel#label_body{
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+QCheckBox#checkBox_Search{
+    font-size: 18px;
+}
+
+QCheckBox#checkBox_Only_Seen,QCheckBox#checkBox_Date{
+    font-size:16px;
+    margin-left: 5px;
+}
+
+QPushButton{
+    border-width: 2px;
+    border-color: #1e1e1e;
+    border-style: solid;
+    border-radius: 6;
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+QPushButton:hover{
+    border: 2px solid grey;
+}
+
+QPushButton:pressed{
+    background-color: grey;
+}
+
+QLineEdit{
+    font-family: "Seb Neue News";
+    src:url(fonts/SebneueNews.otf);
+    border: 1px solid black;
+    padding:1px;
+    font-size: 15px;
+}

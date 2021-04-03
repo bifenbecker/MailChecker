@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 import time
@@ -6,7 +7,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog
 
-import PrevLoadWindow,AddSessionWindow, DeleteSessionWindow
+import PrevLoadWindow,AddSessionWindow, DeleteSessionWindow,SettingsWindow
 from gui import MainWindow
 
 
@@ -14,31 +15,6 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
     def __init__(self):
         super(App, self).__init__()
         self.initUi()
-
-    def checkBox_style_setup(self):
-        file_style = open("styles/QCheckBox_style.txt").read()
-        self.checkBox_Date.setStyleSheet(file_style)
-        self.checkBox_Only_Seen.setStyleSheet(file_style)
-
-    def groupBox_style_setup(self):
-        file_style = open("styles/QGroupBox_style.txt").read()
-        self.groupBox_Statistic.setStyleSheet(file_style)
-        self.groupBox_Filter.setStyleSheet(file_style)
-        self.groupBox_Requests.setStyleSheet(file_style)
-
-    def label_style_setup(self):
-        file_style_label = open("styles/Qlable_style.txt").read()
-        self.label_6.setStyleSheet(file_style_label)
-        self.label_5.setStyleSheet(file_style_label)
-        self.label_Active_Session.setStyleSheet(file_style_label)
-        self.label.setStyleSheet(file_style_label)
-        self.label_2.setStyleSheet(file_style_label)
-        self.label_3.setStyleSheet(file_style_label)
-        self.label_4.setStyleSheet(file_style_label)
-        self.label_Accounts.setStyleSheet(file_style_label)
-        self.label_Checked.setStyleSheet(file_style_label)
-        self.label_Valid.setStyleSheet(file_style_label)
-        self.label_Unvalid.setStyleSheet(file_style_label)
 
     def init_sesions(self):
         path_sesions = os.path.join(os.getcwd(),'sessions')
@@ -50,19 +26,26 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
             self.action.triggered.connect(self.select_session)
             self.menuChoose_session.addAction(self.action)
 
+    def load_theme(self):
+        with open('settings.json') as file:
+            settings = json.load(file)
+        path = "styles/{0}.txt".format(settings['Theme'].replace(' ',''))
+        with open(path) as theme:
+            self.setStyleSheet(theme.read())
+
     def initUi(self):
         self.setupUi(self)
         self.init_sesions()
+        # print(self.treeWidget.children())
         self.pushButton_Search.setEnabled(False)
         self.path_session = None
         self.search_result = None
         self.dialog_warning = DialogWindow.Dialog()
-        self.label_style_setup()
-        self.groupBox_style_setup()
-        self.checkBox_style_setup()
+        self.load_theme()
         self.actionLoad_mails.triggered.connect(self.Load)
         self.actionAdd_Session.triggered.connect(self.add_session)
         self.actionDelete_Session.triggered.connect(self.delete_session)
+        self.actionSettings.triggered.connect(self.show_settings_window)
         self.treeWidget.itemDoubleClicked.connect(self.show_mails_window)
         self.pushButton_Search.clicked.connect(self.search)
         self.checkBox_Date.clicked.connect(self.search_btn_enable)
@@ -93,18 +76,23 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
         cursor = connection.cursor()
         sql_search = "SELECT * FROM mails WHERE "
+        req = ""
         sqls = [self._check_only_seen(), self._check_date()]
         parametrs = []
         for sql in sqls:
             if sql[0]:
                 sql_search += sql[-1] + "=? AND "
+                req += sql[-1] + " "
                 parametrs.append(sql[1])
         sql_search = sql_search[:-5]
         cursor.execute(sql_search,tuple(parametrs))
-        res = cursor.fetchmany(-1)
-        print(len(res))
-
-
+        res = cursor.fetchall()
+        item = QtWidgets.QTreeWidgetItem()
+        item.setText(0, res[0][0])
+        item.setText(1, res[0][1])
+        item.setText(2, req)
+        item.setText(3, str(len(res)))
+        self.treeWidget.addTopLevelItem(item)
 
     def _check_only_seen(self):
         checked = False
@@ -124,6 +112,10 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
     def show_mails_window(self):
         self.mails_window = MailsWindow.App(self.result)
         self.mails_window.show()
+
+    def show_settings_window(self):
+        self.settings_window = SettingsWindow.App(self)
+        self.settings_window.show()
 
     def add_session(self):
         self.add_session_window = AddSessionWindow.App(self)
