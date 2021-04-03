@@ -1,8 +1,10 @@
-import base64
+import time
+
 import mimetypes
 import imaplib
+
 import email
-import time
+from email.header import decode_header
 
 
 class IMAP:
@@ -38,32 +40,29 @@ class IMAP:
 
         date can only have '%a, %d %b %Y %H:%M:%S' format"""
 
-        date = date.split(' ')[:5]
-        time_obj = time.strptime(' '.join(date), '%a, %d %b %Y %H:%M:%S')
+        print(date)
+
+        if date[:1].isdigit():
+            date = date.split()[:4]
+        else:
+            date = date.split()[1:5]
+
+        time_obj = time.strptime(' '.join(date), '%d %b %Y %H:%M:%S')
 
         return int(time.mktime(time_obj))
 
     @staticmethod
-    def _clear_subject(subject: str, bad_strings: tuple = (), bad_symbols: str = '/:*?"<>|') -> str:
+    def _clear_subject(subject: str) -> str:
         """Clear subject field in imap response
 
-        subject - string, that will be cleared
-        bad_strings - tuple of strings, which will be cleared
-        bad_symbols - tuple of symbols, which will be cleared"""
+        subject - string, that will be cleared"""
 
-        if not bad_strings:
-            bad_strings = ("=?UTF-8?B?", "=?utf-8?B?")
+        bytes_string, encoding = decode_header(subject)[0]
 
-        for s in bad_strings:
-            if s in subject:
-                subject_list = [base64.b64decode(p).decode('utf-8') for p in subject.split(s)]
-                subject = ''.join(subject_list)
-
-                # subject = ''.join(map(lambda x: base64.b64decode(x).decode('utf-8'), msg['Subject'].split(s)))
-
-        for symbol in bad_symbols:
-            if symbol in subject:
-                subject = subject.replace(symbol, '')
+        if encoding:
+            subject = bytes_string.decode(encoding)
+        else:
+            subject = str(bytes_string)
 
         return subject
 
@@ -84,26 +83,39 @@ class IMAP:
             _to = len(item_list)
 
         for item in item_list[_from:_to]:
+
+            print('message: ', item_list.index(item))
+
             message = {}
 
             result, email_data = self.connection.uid('fetch', item, '(RFC822)')
             raw_email = email_data[0][1].decode("latin-1")
             msg = email.message_from_string(raw_email)
 
+            # msg = email.message_from_bytes(email_data[0][1])
+
             result = ""
+            flag = True
+
             for part in msg.walk():
 
-                if part["Content-Type"].startswith('text/html'):
+                content_type = part.get_content_type()
+
+                if 'multipart' in content_type:
+                    continue
+
+                if content_type == 'text/html':
                     result = part
                     break
 
-                elif part["Content-Type"].startswith('text/plain'):
+                elif flag and content_type == 'text/plain':
                     result = part
+                    flag = False
 
-                if part.get_content_maintype() == 'multipart':
-                    continue
-
-            message["date"] = self.get_unix_time(str(msg["Date"]))
+            # print(_structure(msg))
+            # print(result)
+            # print(msg["Delivery-date"])
+            message["date"] = self.get_unix_time(msg["Received"].split('; ')[-1])
             message["sender"] = msg["From"]
             message["subject"] = self._clear_subject(msg["Subject"])
             message["content"] = str(result.get_payload(decode=True))

@@ -420,3 +420,62 @@ cursor = conn.cursor()
 # Не забываем закрыть соединение с базой данных
 conn.close()
 
+# with orm.db_session:
+#     for account in accounts_list[:5]:
+#
+#         try:
+#             imap = IMAP(account['login'], account['password'], secure=True)
+#             account['is_valid'] = True
+#         except emaillib.imap.Error:
+#             account['is_valid'] = False
+#
+#         unique_fields = {
+#             'login': account["login"]
+#         }
+#
+#         acc = sqlite_db.add_in_table(Account, data=account, unique_fields=unique_fields)[1]
+#
+#         if not account['is_valid']:
+#             continue
+#
+#         print(f"login: {account['login']}")
+#         print(f"password: {account['password']}")
+#         print()
+#
+#         for message in imap.get_messages(_to=5):
+#
+#             print(message)
+#             message["owner"] = acc
+#
+#             unique_fields = {
+#                 'sender': message["sender"],
+#                 'content': message["content"],
+#             }
+#
+#             msg = sqlite_db.add_in_table(Message, data=message, unique_fields=unique_fields)
+#
+#         print()
+
+
+def _clear_subject(subject: str, bad_strings: tuple = (), bad_symbols: str = '/:*?"<>|') -> str:
+    """Clear subject field in imap response
+
+    subject - string, that will be cleared
+    bad_strings - tuple of strings, which will be cleared
+    bad_symbols - tuple of symbols, which will be cleared"""
+
+    if not bad_strings:
+        bad_strings = ("=?UTF-8?B?", "=?utf-8?B?")
+
+    for s in bad_strings:
+        if s in subject:
+            subject_list = [base64.b64decode(p).decode('utf-8') for p in subject.split(s)]
+            subject = ''.join(subject_list)
+
+            # subject = ''.join(map(lambda x: base64.b64decode(x).decode('utf-8'), msg['Subject'].split(s)))
+
+    for symbol in bad_symbols:
+        if symbol in subject:
+            subject = subject.replace(symbol, '')
+
+    return subject

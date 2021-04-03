@@ -36,5 +36,6 @@ class SQLiteDB:
             return (False, entry)
 
     @orm.db_session
-    def show_table(self, table: orm.core.Entity) -> None:
+    def show_table(self, table: orm.core.Entity, end: str = '') -> None:
         table.select().show()
+        print(end=end)

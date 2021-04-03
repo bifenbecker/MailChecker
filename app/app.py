@@ -1,9 +1,11 @@
 import emaillib
 from emaillib.imap import IMAP
 
-from pony import orm
 from database.models import Account, Message
 from database.database import SQLiteDB
+
+from pony import orm
+import threading
 
 
 def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> list:
@@ -21,11 +23,26 @@ def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> li
     return accounts
 
 
-accounts_list = get_accounts("data\\mails.txt", separator=':')
-sqlite_db = SQLiteDB()
+@orm.db_session
+def add_messages(imap: IMAP, db: SQLiteDB, acc: Account) -> None:
+    for message in imap.get_messages(_to=10):
+        message["owner"] = acc
 
-with orm.db_session:
-    for account in accounts_list[:5]:
+        unique_fields = {
+            'sender': message["sender"],
+            'content': message["content"],
+        }
+
+        msg = db.add_in_table(Message, data=message, unique_fields=unique_fields)
+
+
+@orm.db_session
+def fill_tables(db: SQLiteDB, accounts_list: list):
+    """Check accounts, retrieve all messages and add it to database"""
+
+    for account in accounts_list:
+
+        print('account: ', accounts_list.index(account))
 
         try:
             imap = IMAP(account['login'], account['password'], secure=True)
@@ -37,28 +54,22 @@ with orm.db_session:
             'login': account["login"]
         }
 
-        acc = sqlite_db.add_in_table(Account, data=account, unique_fields=unique_fields)[1]
+        acc = db.add_in_table(Account, data=account, unique_fields=unique_fields)[1]
 
         if not account['is_valid']:
             continue
 
-        print(f"login: {account['login']}")
-        print(f"password: {account['password']}")
-        print()
+        thread = threading.Thread(target=add_messages, args=(imap, db, acc))
+        thread.start()
 
-        for message in imap.get_messages(_to=5):
+        # add_messages(imap, db, acc)
 
-            print(message)
-            message["owner"] = acc
 
-            unique_fields = {
-                'sender': message["sender"],
-                'content': message["content"],
-            }
+if __name__ == '__main__':
+    sqlite_db = SQLiteDB()
 
-            msg = sqlite_db.add_in_table(Message, data=message, unique_fields=unique_fields)
+    accounts_list = get_accounts("data\\mails.txt", separator=':')
+    fill_tables(sqlite_db, accounts_list[:1])
 
-        print()
-
-sqlite_db.show_table(Account)
-sqlite_db.show_table(Message)
+    sqlite_db.show_table(Account, end='\n\n')
+    sqlite_db.show_table(Message)
