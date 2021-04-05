@@ -2,12 +2,13 @@ import json
 import os
 import sqlite3
 import time
-import PyQt5,sys,MailData,ExceptionBreak,DialogWindow,MailsWindow,MailWindow
+import PyQt5,sys,MailData,ExceptionBreak
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog
 
-import PrevLoadWindow,AddSessionWindow, DeleteSessionWindow,SettingsWindow
+from Settings import Settings
+from windows import PrevLoadWindow,AddSessionWindow, DeleteSessionWindow,SettingsWindow,DialogWindow,MailsWindow,MailWindow
 from gui import MainWindow
 
 
@@ -26,13 +27,6 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
             self.action.triggered.connect(self.select_session)
             self.menuChoose_session.addAction(self.action)
 
-    def load_theme(self):
-        with open('settings.json') as file:
-            settings = json.load(file)
-        path = "styles/{0}.txt".format(settings['Theme'].replace(' ',''))
-        with open(path) as theme:
-            self.setStyleSheet(theme.read())
-
     def initUi(self):
         self.setupUi(self)
         self.init_sesions()
@@ -41,7 +35,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.path_session = None
         self.search_result = None
         self.dialog_warning = DialogWindow.Dialog()
-        self.load_theme()
+        Settings.setUp(self)
         self.actionLoad_mails.triggered.connect(self.Load)
         self.actionAdd_Session.triggered.connect(self.add_session)
         self.actionDelete_Session.triggered.connect(self.delete_session)
@@ -87,6 +81,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         sql_search = sql_search[:-5]
         cursor.execute(sql_search,tuple(parametrs))
         res = cursor.fetchall()
+        self.result = res
         item = QtWidgets.QTreeWidgetItem()
         item.setText(0, res[0][0])
         item.setText(1, res[0][1])
@@ -114,7 +109,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.mails_window.show()
 
     def show_settings_window(self):
-        self.settings_window = SettingsWindow.App(self)
+        self.settings_window = SettingsWindow.App(self,self.dialog_warning)
         self.settings_window.show()
 
     def add_session(self):

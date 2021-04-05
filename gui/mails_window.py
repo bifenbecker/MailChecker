@@ -11,11 +11,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(833, 586)
-        self.horizontalLayoutWidget = QtWidgets.QWidget(Form)
+class Ui_MailsWindow(object):
+    def setupUi(self, MailsWindow):
+        MailsWindow.setObjectName("MailsWindow")
+        MailsWindow.resize(833, 586)
+        self.horizontalLayoutWidget = QtWidgets.QWidget(MailsWindow)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 831, 581))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
@@ -26,10 +26,10 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.treeWidget)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.groupBox = QtWidgets.QGroupBox(self.horizontalLayoutWidget)
-        self.groupBox.setObjectName("groupBox")
-        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.groupBox)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 10, 201, 341))
+        self.groupBox_Download = QtWidgets.QGroupBox(self.horizontalLayoutWidget)
+        self.groupBox_Download.setObjectName("groupBox_Download")
+        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.groupBox_Download)
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(10, 20, 181, 331))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -50,7 +50,7 @@ class Ui_Form(object):
         self.verticalLayout_3.setStretch(1, 3)
         self.verticalLayout_3.setStretch(3, 3)
         self.verticalLayout_3.setStretch(4, 4)
-        self.verticalLayout_2.addWidget(self.groupBox)
+        self.verticalLayout_2.addWidget(self.groupBox_Download)
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem3)
         self.verticalLayout_2.setStretch(0, 5)
@@ -59,16 +59,16 @@ class Ui_Form(object):
         self.horizontalLayout.setStretch(0, 6)
         self.horizontalLayout.setStretch(1, 2)
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(MailsWindow)
+        QtCore.QMetaObject.connectSlotsByName(MailsWindow)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, MailsWindow):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.treeWidget.headerItem().setText(0, _translate("Form", "Date"))
-        self.treeWidget.headerItem().setText(1, _translate("Form", "Subject"))
-        self.treeWidget.headerItem().setText(2, _translate("Form", "From"))
-        self.treeWidget.headerItem().setText(3, _translate("Form", "Type"))
-        self.groupBox.setTitle(_translate("Form", "Download"))
-        self.pushButton_Download_Selected.setText(_translate("Form", "Download selected"))
-        self.pushButton_Download_All.setText(_translate("Form", "Download all"))
+        MailsWindow.setWindowTitle(_translate("MailsWindow", "Mails"))
+        self.treeWidget.headerItem().setText(0, _translate("MailsWindow", "Date"))
+        self.treeWidget.headerItem().setText(1, _translate("MailsWindow", "Subject"))
+        self.treeWidget.headerItem().setText(2, _translate("MailsWindow", "From"))
+        self.treeWidget.headerItem().setText(3, _translate("MailsWindow", "Type"))
+        self.groupBox_Download.setTitle(_translate("MailsWindow", "Download"))
+        self.pushButton_Download_Selected.setText(_translate("MailsWindow", "Download selected"))
+        self.pushButton_Download_All.setText(_translate("MailsWindow", "Download all"))

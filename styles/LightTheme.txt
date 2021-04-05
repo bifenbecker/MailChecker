@@ -9,6 +9,7 @@ QRadioButton{
     src:url(fonts/SebneueLight.otf);
 }
 
+
 QGroupBox{
     font-size: 14px;
     font-family: "Seb Neue ExtBd";

@@ -1,13 +1,16 @@
 import asyncio
 
-import PyQt5,DialogWindow,MailData,ThreadProc
+import PyQt5,MailData,ThreadProc
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
+
+from Settings import Settings
 from gui import prev_window
+from windows import DialogWindow
 
 
-class App(QtWidgets.QWidget, prev_window.Ui_Form):
+class App(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     resized = QtCore.pyqtSignal()
     def __init__(self,path):
         super(App, self).__init__()
@@ -22,6 +25,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
         self.pushButton_load_data_file.clicked.connect(self.load_data)
         self.pushButton_load_data_link.clicked.connect(self.load_data)
         self.pushButton_Cancel_Load.clicked.connect(self.cancel_load)
+        Settings.setUp(self)
 
 
     def load_file(self):
@@ -52,8 +56,9 @@ class App(QtWidgets.QWidget, prev_window.Ui_Form):
             self.dialog_warning.show()
 
     def cancel_load(self):
-        self.thread.stop()
-        self.thread = None
+        if self.thread is not None:
+            self.thread.stop()
+            self.thread = None
         self.close()
 
 

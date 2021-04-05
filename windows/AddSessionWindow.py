@@ -1,11 +1,14 @@
-import os,DialogWindow
-import sqlite3
+import json
+
+from Settings import Settings
+from windows import DialogWindow
+import sqlite3,os
 
 from gui import add_session
 from PyQt5 import QtWidgets, QtCore, Qt
 
 
-class App(QtWidgets.QWidget, add_session.Ui_Form):
+class App(QtWidgets.QWidget, add_session.Ui_AddSession):
     def __init__(self,window):
         super(App, self).__init__()
         self.setupUi(self)
@@ -13,6 +16,7 @@ class App(QtWidgets.QWidget, add_session.Ui_Form):
         self.dialog_warning = DialogWindow.Dialog()
         self.pushButton_Cancel.clicked.connect(self.close)
         self.pushButton_Ok.clicked.connect(self.add_session)
+        Settings.setUp(self)
 
     def add_session(self):
         name_session = self.lineEdit.text()

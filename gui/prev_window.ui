@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>PrevWindow</class>
+ <widget class="QWidget" name="PrevWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -28,7 +28,7 @@
      <height>331</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout_Load" rowstretch="12,5,0">
+   <layout class="QGridLayout" name="gridLayout_Load" rowstretch="12,5">
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">

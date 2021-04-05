@@ -1,4 +1,6 @@
 import PyQt5
+
+from Settings import Settings
 from gui import dialog
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
@@ -10,6 +12,7 @@ class Dialog(QtWidgets.QWidget, dialog.Ui_Dialog):
         self.pushButton_Ok.clicked.connect(self.close)
         self.pushButton_Cancel.clicked.connect(self.close)
         self.setWindowTitle("Warning")
+        Settings.setUp(self)
 
     def set_mes(self,mes):
         self.message.setText(mes)

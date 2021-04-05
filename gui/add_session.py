@@ -11,16 +11,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(400, 240)
-        Form.setMinimumSize(QtCore.QSize(400, 240))
-        Form.setMaximumSize(QtCore.QSize(400, 240))
-        self.pushButton_Cancel = QtWidgets.QPushButton(Form)
+class Ui_AddSession(object):
+    def setupUi(self, AddSession):
+        AddSession.setObjectName("AddSession")
+        AddSession.resize(400, 240)
+        AddSession.setMinimumSize(QtCore.QSize(400, 240))
+        AddSession.setMaximumSize(QtCore.QSize(400, 240))
+        self.pushButton_Cancel = QtWidgets.QPushButton(AddSession)
         self.pushButton_Cancel.setGeometry(QtCore.QRect(310, 170, 75, 23))
         self.pushButton_Cancel.setObjectName("pushButton_Cancel")
-        self.label = QtWidgets.QLabel(Form)
+        self.label = QtWidgets.QLabel(AddSession)
         self.label.setGeometry(QtCore.QRect(0, 0, 399, 77))
         font = QtGui.QFont()
         font.setFamily("Seb Neue")
@@ -28,10 +28,10 @@ class Ui_Form(object):
         self.label.setFont(font)
         self.label.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.label.setObjectName("label")
-        self.pushButton_Ok = QtWidgets.QPushButton(Form)
+        self.pushButton_Ok = QtWidgets.QPushButton(AddSession)
         self.pushButton_Ok.setGeometry(QtCore.QRect(220, 170, 75, 23))
         self.pushButton_Ok.setObjectName("pushButton_Ok")
-        self.lineEdit = QtWidgets.QLineEdit(Form)
+        self.lineEdit = QtWidgets.QLineEdit(AddSession)
         self.lineEdit.setGeometry(QtCore.QRect(0, 80, 399, 74))
         font = QtGui.QFont()
         font.setFamily("Seb Neue")
@@ -40,12 +40,12 @@ class Ui_Form(object):
         self.lineEdit.setStyleSheet("margin: 20px;")
         self.lineEdit.setObjectName("lineEdit")
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(AddSession)
+        QtCore.QMetaObject.connectSlotsByName(AddSession)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, AddSession):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Add session"))
-        self.pushButton_Cancel.setText(_translate("Form", "Cancel"))
-        self.label.setText(_translate("Form", "Name of the session"))
-        self.pushButton_Ok.setText(_translate("Form", "OK"))
+        AddSession.setWindowTitle(_translate("AddSession", "Add session"))
+        self.pushButton_Cancel.setText(_translate("AddSession", "Cancel"))
+        self.label.setText(_translate("AddSession", "Name of the session"))
+        self.pushButton_Ok.setText(_translate("AddSession", "OK"))

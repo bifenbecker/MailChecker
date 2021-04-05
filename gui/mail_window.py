@@ -11,20 +11,20 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(864, 888)
-        self.verticalLayoutWidget = QtWidgets.QWidget(Form)
+class Ui_MailWindow(object):
+    def setupUi(self, MailWindow):
+        MailWindow.setObjectName("MailWindow")
+        MailWindow.resize(864, 888)
+        self.verticalLayoutWidget = QtWidgets.QWidget(MailWindow)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 861, 881))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(MailWindow)
+        QtCore.QMetaObject.connectSlotsByName(MailWindow)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, MailWindow):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        MailWindow.setWindowTitle(_translate("MailWindow", "Mail"))

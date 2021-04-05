@@ -25,6 +25,11 @@
    <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1">
     <item>
      <widget class="QLabel" name="message">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>TextLabel</string>
       </property>

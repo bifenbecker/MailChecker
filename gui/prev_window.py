@@ -11,12 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(455, 330)
-        Form.setMaximumSize(QtCore.QSize(455, 330))
-        self.gridLayoutWidget_3 = QtWidgets.QWidget(Form)
+class Ui_PrevWindow(object):
+    def setupUi(self, PrevWindow):
+        PrevWindow.setObjectName("PrevWindow")
+        PrevWindow.resize(455, 330)
+        PrevWindow.setMaximumSize(QtCore.QSize(455, 330))
+        self.gridLayoutWidget_3 = QtWidgets.QWidget(PrevWindow)
         self.gridLayoutWidget_3.setGeometry(QtCore.QRect(0, 0, 451, 331))
         self.gridLayoutWidget_3.setObjectName("gridLayoutWidget_3")
         self.gridLayout_Load = QtWidgets.QGridLayout(self.gridLayoutWidget_3)
@@ -126,16 +126,16 @@ class Ui_Form(object):
         self.gridLayout_Load.setRowStretch(0, 12)
         self.gridLayout_Load.setRowStretch(1, 5)
 
-        self.retranslateUi(Form)
+        self.retranslateUi(PrevWindow)
         self.stackedWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        QtCore.QMetaObject.connectSlotsByName(PrevWindow)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, PrevWindow):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Load emails"))
-        self.pushButton_load_data_link.setText(_translate("Form", "Load"))
-        self.pushButton_swap_file.setText(_translate("Form", "Load from file"))
-        self.pushButton_load_data_file.setText(_translate("Form", "Load"))
-        self.pushButton_swap_link.setText(_translate("Form", "Load from link"))
-        self.pushButton_load_file.setText(_translate("Form", "Load file or drop"))
-        self.pushButton_Cancel_Load.setText(_translate("Form", "Cancel"))
+        PrevWindow.setWindowTitle(_translate("PrevWindow", "Load emails"))
+        self.pushButton_load_data_link.setText(_translate("PrevWindow", "Load"))
+        self.pushButton_swap_file.setText(_translate("PrevWindow", "Load from file"))
+        self.pushButton_load_data_file.setText(_translate("PrevWindow", "Load"))
+        self.pushButton_swap_link.setText(_translate("PrevWindow", "Load from link"))
+        self.pushButton_load_file.setText(_translate("PrevWindow", "Load file or drop"))
+        self.pushButton_Cancel_Load.setText(_translate("PrevWindow", "Cancel"))

@@ -1,12 +1,14 @@
-import os,DialogWindow,shutil
+import os,shutil
 
+from Settings import Settings
+from windows import DialogWindow
 from PyQt5.QtWidgets import QAction
 
 from gui import delete_session
 from PyQt5 import QtWidgets, QtCore, Qt
 
 
-class App(QtWidgets.QWidget, delete_session.Ui_Form):
+class App(QtWidgets.QWidget, delete_session.Ui_DeleteSession):
     def __init__(self,window):
         super(App, self).__init__()
         self.setupUi(self)
@@ -16,6 +18,7 @@ class App(QtWidgets.QWidget, delete_session.Ui_Form):
         self.pushButton_Cancel.clicked.connect(self.close)
         self.pushButton_Delete.clicked.connect(self.delete)
         self.init_comboBox_sessions()
+        Settings.setUp(self)
 
     def init_comboBox_sessions(self):
         sessions = os.listdir(self.path_sessions)
