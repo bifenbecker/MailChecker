@@ -13,7 +13,7 @@ class Account(db.Entity):
 class Message(db.Entity):
     # date = orm.Required(int)
     sender = orm.Required(str)
-    subject = orm.Required(str)
+    subject = orm.Optional(str)
     content = orm.Required(str)
     content_extension = orm.Required(str)
     owner = orm.Required(Account)

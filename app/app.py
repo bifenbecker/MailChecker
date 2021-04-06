@@ -164,13 +164,13 @@ if __name__ == '__main__':
         "folder": "INBOX",
         "_filter": IMAP.get_filter(filters),
         "_from": 0,
-        "_to": 10,
+        "_to": 3,
     }
 
     print(IMAP.get_filter(filters), end='\n\n')
 
     accounts_list = get_accounts("data\\mails.txt", separator=':')
-    _main(sqlite_db, accounts_list[:10], save_path, file_name, search_params)
+    _main(sqlite_db, accounts_list[65:], save_path, file_name, search_params)
 
     # sqlite_db.show_table(Account, end='\n\n')
     # sqlite_db.show_table(Message)
