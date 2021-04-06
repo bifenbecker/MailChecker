@@ -1,16 +1,15 @@
-import os
-
 from database.models import db
 
 from pony import orm
 
 
+# TODO: Add docs for class and its functions
 class SQLiteDB:
     db_count = 0
     table_count = 0
 
-    def __init__(self, provider: str, filename: str, create_db: bool, create_tables: bool) -> None:
-        db.bind(provider, filename, create_db)
+    def __init__(self, filename: str, create_db: bool, create_tables: bool) -> None:
+        db.bind('sqlite', filename, create_db)
         db.generate_mapping(create_tables=create_tables)
 
         # if not session_name:

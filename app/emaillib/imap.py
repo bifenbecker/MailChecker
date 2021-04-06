@@ -43,7 +43,7 @@ class IMAP:
 
         date can only have '%a, %d %b %Y %H:%M:%S' format"""
 
-        print(date)
+        # print(date)
 
         if date[:1].isdigit():
             date = date.split()[:4]
@@ -69,8 +69,41 @@ class IMAP:
 
         return subject
 
-    def get_messages(self, folder: str = "INBOX", _filter: str = "ALL", _from: int = 0, _to: int = 0) -> list:
-        """Get messages from email address and fill messages field of IMAP instance
+    @staticmethod
+    def get_filter(query_params: dict):
+        """Create and return IMAP query to select certain messages
+
+        query_params - dict of fields, which shall be used to create query"""
+
+        query = ""
+
+        if query_params["new"]:
+            query += "NEW "
+
+        if query_params["in_header"] and query_params["in_body"]:
+            query += f"TEXT \"{query_params['string']}\" "
+        elif query_params["in_header"]:
+            query += f"HEADER \"{query_params['string']}\" "
+        elif query_params["in_body"]:
+            query += f"BODY \"{query_params['string']}\" "
+
+        if query_params["since"]:
+            query += f"SINCE {query_params['since']}"
+        elif query_params["before"]:
+            query += f"BEFORE {query_params['before']}"
+        elif query_params["on"]:
+            query += f"ON {query_params['on']}"
+
+        query_list = query.split()
+        if len(query_list) == 1:
+            return query_list[0]
+        elif len(query_list) > 1:
+            return f"({query})"
+        else:
+            return "ALL"
+
+    def get_uids(self, folder: str = "INBOX", _filter: str = "ALL", _from: int = 0, _to: int = 0) -> list:
+        """Get uid's(special id's) of messages with certain filter
 
         folder - folder on imap server, which will be selected (default: "INBOX")
         _filter - filter to select messages (default: "ALL")
@@ -78,61 +111,83 @@ class IMAP:
         _to - upper frame of selection (default: 0)"""
 
         self.connection.select(folder)
-
-        result, data = self.connection.uid('search', "", _filter)
-        item_list = data[0].split()
+        result, data = self.connection.uid('search', None, _filter)
+        uids_list = data[0].split()
 
         if not _to:
-            _to = len(item_list)
+            _to = len(uids_list)
 
-        for item in item_list[_from:_to]:
+        return uids_list[_from:_to]
 
-            print('message: ', item_list.index(item))
+    def get_message(self, uid: bytes) -> dict:
+        """Get message from email address
 
-            message = {}
+        uid - id of message to receive certain message"""
 
-            result, email_data = self.connection.uid('fetch', item, '(RFC822)')
-            raw_email = email_data[0][1].decode("latin-1")
-            msg = email.message_from_string(raw_email)
+        message = {}
 
-            # msg = email.message_from_bytes(email_data[0][1])
+        result, email_data = self.connection.uid('fetch', uid, '(RFC822)')
+        raw_email = email_data[0][1].decode("latin-1")
+        msg = email.message_from_string(raw_email)
 
-            result = ""
-            flag = True
+        # msg = email.message_from_bytes(email_data[0][1])
 
-            for part in msg.walk():
+        result = ""
+        flag = True
 
-                content_type = part.get_content_type()
+        for part in msg.walk():
 
-                if 'multipart' in content_type:
-                    continue
+            content_type = part.get_content_type()
 
-                if content_type == 'text/html':
-                    result = part
-                    break
+            if 'multipart' in content_type:
+                continue
 
-                elif flag and content_type == 'text/plain':
-                    result = part
-                    flag = False
+            if content_type == 'text/html':
+                result = part
+                break
 
-            # print(_structure(msg))
-            # print(result)
-            # print(msg["Delivery-date"])
-            message["date"] = self.get_unix_time(msg["Received"].split('; ')[-1])
-            message["sender"] = msg["From"]
-            message["subject"] = self._clear_subject(msg["Subject"])
-            message["content"] = str(result.get_payload(decode=True))
-            message["content_extension"] = mimetypes.guess_extension(result.get_content_type())
+            elif flag and content_type == 'text/plain':
+                result = part
+                flag = False
 
-            # message["raw_message"] = msg
-            # message["structure"] = _structure(msg)
+        # print(_structure(msg))
+        # print(result)
+        # print(msg["Delivery-date"])
+        # message["date"] = self.get_unix_time(msg["Received"].split('; ')[-1])
 
-            if message not in self.messages:
-                self.messages.append(message)
+        # message["date"] = self.get_unix_time(msg["Date"])
+        message["sender"] = msg["From"]
+        message["subject"] = self._clear_subject(msg["Subject"])
+        message["content"] = str(result.get_payload(decode=True))
+        message["content_extension"] = mimetypes.guess_extension(result.get_content_type())
 
-        return self.messages
+        # message["raw_message"] = msg
+        # message["structure"] = _structure(msg)
+
+        if message not in self.messages:
+            self.messages.append(message)
+
+        return message
+
+    def get_messages(self, uids_list: list) -> list:
+        """Get messages from email address and fill messages field of IMAP instance
+
+        uids_list - list of messages id's to receive messages"""
+
+        messages = []
+
+        for uid in uids_list:
+
+            print('message uid: ', uid)
+
+            message = self.get_message(uid)
+            messages.append(message)
+
+        return messages
 
 
 class Error(Exception):
+    """Error class for generating exceptions for IMAP class"""
+
     def __init__(self, text):
         self.text = text

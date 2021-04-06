@@ -11,7 +11,7 @@ class Account(db.Entity):
 
 
 class Message(db.Entity):
-    date = orm.Required(int)
+    # date = orm.Required(int)
     sender = orm.Required(str)
     subject = orm.Required(str)
     content = orm.Required(str)

@@ -388,7 +388,7 @@ conn.close()
 
 # Импортируем библиотеку, соответствующую типу нашей базы данных
 # В данном случае импортируем все ее содержимое, чтобы при обращении не писать каждый раз имя библиотеки, как мы делали в первой статье
-import peewee as pw
+# import peewee as pw
 
 # Создаем соединение с нашей базой данных
 # В нашем примере у нас это просто файл базы
@@ -396,21 +396,21 @@ import peewee as pw
 
 
 # Определяем базовую модель о которой будут наследоваться остальные
-class BaseModel(pw.Model):
-    class Meta:
-        database = conn  # соединение с базой, из шаблона выше
+# class BaseModel(pw.Model):
+#     class Meta:
+#         database = conn  # соединение с базой, из шаблона выше
 
 
 # Определяем модель исполнителя
-class Artist(BaseModel):
-    artist_id = pw.AutoField(column_name='ArtistId')
-    name = pw.TextField(column_name='Name', null=True)
-
-    class Meta:
-        table_name = 'Artist'
-
-
-conn = pw.SqliteDatabase('Chinook_Sqlite.sqlite')
+# class Artist(BaseModel):
+#     artist_id = pw.AutoField(column_name='ArtistId')
+#     name = pw.TextField(column_name='Name', null=True)
+#
+#     class Meta:
+#         table_name = 'Artist'
+#
+#
+# conn = pw.SqliteDatabase('Chinook_Sqlite.sqlite')
 
 # Создаем курсор - специальный объект для запросов и получения данных с базы
 cursor = conn.cursor()
@@ -489,3 +489,65 @@ def insert_date(s: str, date: str) -> str:
 # str_date = datetime.now().strftime("%d.%m.%Y_%H.%M.%S")
 # dir_name = f"{file_name}_{str_date}"
 
+# def get_messages(self, folder: str = "INBOX", _filter: str = "ALL", _from: int = 0, _to: int = 0) -> list:
+#     """Get messages from email address and fill messages field of IMAP instance
+#
+#     folder - folder on imap server, which will be selected (default: "INBOX")
+#     _filter - filter to select messages (default: "ALL")
+#     _from - lower frame of selection (default: 0)
+#     _to - upper frame of selection (default: 0)"""
+#
+#     self.connection.select(folder)
+#
+#     result, data = self.connection.uid('search', "", _filter)
+#     item_list = data[0].split()
+#
+#     if not _to:
+#         _to = len(item_list)
+#
+#     for item in item_list[_from:_to]:
+#
+#         print('message: ', item_list.index(item))
+#
+#         message = {}
+#
+#         result, email_data = self.connection.uid('fetch', item, '(RFC822)')
+#         raw_email = email_data[0][1].decode("latin-1")
+#         msg = email.message_from_string(raw_email)
+#
+#         # msg = email.message_from_bytes(email_data[0][1])
+#
+#         result = ""
+#         flag = True
+#
+#         for part in msg.walk():
+#
+#             content_type = part.get_content_type()
+#
+#             if 'multipart' in content_type:
+#                 continue
+#
+#             if content_type == 'text/html':
+#                 result = part
+#                 break
+#
+#             elif flag and content_type == 'text/plain':
+#                 result = part
+#                 flag = False
+#
+#         # print(_structure(msg))
+#         # print(result)
+#         # print(msg["Delivery-date"])
+#         message["date"] = self.get_unix_time(msg["Received"].split('; ')[-1])
+#         message["sender"] = msg["From"]
+#         message["subject"] = self._clear_subject(msg["Subject"])
+#         message["content"] = str(result.get_payload(decode=True))
+#         message["content_extension"] = mimetypes.guess_extension(result.get_content_type())
+#
+#         # message["raw_message"] = msg
+#         # message["structure"] = _structure(msg)
+#
+#         if message not in self.messages:
+#             self.messages.append(message)
+#
+#     return self.messages
