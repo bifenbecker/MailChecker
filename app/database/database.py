@@ -1,4 +1,4 @@
-from database.models import db
+from database.models import db, Message
 
 from pony import orm
 
@@ -30,6 +30,10 @@ class SQLiteDB:
     @orm.db_session
     def add_in_table(self, table: db.Entity, data: dict, unique_fields: dict) -> tuple:
         entry = self.get_entry(table, unique_fields)
+
+        print(entry)
+        print(unique_fields)
+        print(table.get(**unique_fields))
 
         if not entry:
             entry = table(**data)

@@ -41,12 +41,14 @@ def validation(db: SQLiteDB, protocol: IMAP, account: dict, save_path: str, dir_
 
         rm_dir = False
 
-    if not os.path.exists(save_path):
+    elif not os.path.exists(save_path):
         os.makedirs(save_path)
 
         open(os.path.join(save_path, "GOOD.txt"), 'w')
         open(os.path.join(save_path, "BAD.txt"), 'w')
         open(os.path.join(save_path, "ERROR.txt"), 'w')
+
+        rm_dir = False
 
     save_info = f"{account['login']}:{account['password']}\n"
 
@@ -85,13 +87,11 @@ def log_query(save_path: str, query: str, account: dict, amount: int):
 
     global rm_log
 
-    save_path = os.path.join(save_path, query)
+    save_path = os.path.join(save_path, f"{query}.txt")
 
-    if os.path.exists(save_path) and rm_log:
+    if os.path.exists(save_path) and rm_log or not os.path.exists(save_path):
         open(save_path, 'w')
         rm_log = False
-    elif not os.path.exists(save_path):
-        open(save_path, 'w')
 
     with open(save_path, 'a') as file:
         file.write(f"{account['login']}:{account['password']} | {amount}\n")
@@ -164,13 +164,13 @@ if __name__ == '__main__':
         "folder": "INBOX",
         "_filter": IMAP.get_filter(filters),
         "_from": 0,
-        "_to": 3,
+        "_to": 100,
     }
 
     print(IMAP.get_filter(filters), end='\n\n')
 
     accounts_list = get_accounts("data\\mails.txt", separator=':')
-    _main(sqlite_db, accounts_list[65:], save_path, file_name, search_params)
+    _main(sqlite_db, accounts_list[75:], save_path, file_name, search_params)
 
     # sqlite_db.show_table(Account, end='\n\n')
     # sqlite_db.show_table(Message)

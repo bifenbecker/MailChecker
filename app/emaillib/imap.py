@@ -1,3 +1,4 @@
+import re
 import time
 
 import mimetypes
@@ -5,6 +6,8 @@ import imaplib
 
 import email
 from email.header import decode_header
+
+from email.iterators import _structure
 
 
 class IMAP:
@@ -18,16 +21,25 @@ class IMAP:
     server - imap server address (default: "")
     secure - connection secure mode (default: False)"""
 
-    def __init__(self, address: str, password: str, server: str = "", secure: bool = False):
+    def __init__(self, address: str, password: str, server: str = "", secure: bool = True):
+
+        secure_dict = {True: imaplib.IMAP4_SSL, False: imaplib.IMAP4}
         self.messages = []
 
         if not server:
             server = f"imap.{address.split('@')[-1]}"
 
-        if secure:
-            self.connection = imaplib.IMAP4_SSL(server)
-        else:
-            self.connection = imaplib.IMAP4(server)
+        for serv in (server, "imap.gmail.com"):
+            try:
+                self.connection = secure_dict[secure](serv)
+                break
+            except Exception:
+                continue
+
+        # if secure:
+        #     self.connection = imaplib.IMAP4_SSL(server)
+        # else:
+        #     self.connection = imaplib.IMAP4(server)
 
         try:
             self.connection.login(address, password)
@@ -38,14 +50,27 @@ class IMAP:
                 raise imaplib.IMAP4.error(err)
 
     @staticmethod
+    def scrap_date(message: email) -> str:
+
+        if not message:
+            return ""
+
+        pattern = r'.?\d [A-Z][a-z]{2} \d{4} (\d{2}:){2}\d{2}'
+        result = re.search(pattern, message)
+
+        return result.group(0) if result else ""
+
+    @staticmethod
     def get_unix_time(date: str) -> int:
         """Convert date to unix-time
 
-        date can only have '%a, %d %b %Y %H:%M:%S' format"""
+        date can only have '%d %b %Y %H:%M:%S' format"""
 
         # print(date)
 
-        if date[:1].isdigit():
+        if not date:
+            return None
+        elif date[0].isdigit() or date[0] == ' ':
             date = date.split()[:4]
         else:
             date = date.split()[1:5]
@@ -59,6 +84,9 @@ class IMAP:
         """Clear subject field in imap response
 
         subject - string, that will be cleared"""
+
+        if not subject:
+            return ""
 
         bytes_string, encoding = decode_header(subject)[0]
 
@@ -110,8 +138,18 @@ class IMAP:
         _from - lower frame of selection (default: 0)
         _to - upper frame of selection (default: 0)"""
 
+        print(self.connection.list())
+        # if f'"{folder}"' not in str(self.connection.list()[1]):
+        #     return []
+
         self.connection.select(folder)
-        result, data = self.connection.uid('search', None, _filter)
+
+        try:
+            result, data = self.connection.uid('search', None, _filter)
+        except Exception as err:
+            print(err)
+            return []
+
         uids_list = data[0].split()
 
         if not _to:
@@ -126,7 +164,12 @@ class IMAP:
 
         message = {}
 
-        result, email_data = self.connection.uid('fetch', uid, '(RFC822)')
+        try:
+            result, email_data = self.connection.uid('fetch', uid, '(RFC822)')
+        except Exception as err:
+            print(err)
+            return None
+
         raw_email = email_data[0][1].decode("latin-1")
         msg = email.message_from_string(raw_email)
 
@@ -150,16 +193,32 @@ class IMAP:
                 result = part
                 flag = False
 
+            elif flag:
+                result = part
+
         # print(_structure(msg))
         # print(result)
         # print(msg["Delivery-date"])
         # message["date"] = self.get_unix_time(msg["Received"].split('; ')[-1])
 
-        # message["date"] = self.get_unix_time(msg["Date"])
-        message["sender"] = msg["From"]
+        # print(msg["Date"])
+        # print(msg["Received"])
+        # print(msg["Delivery-date"])
+        # print(self.scrap_date(str(msg)))
+        # print(msg)
+
+        # print("regex:", self.scrap_date(str(msg)))
+        # print("date: ", msg["Date"])
+        # print(msg)
+
+        message["date"] = self.get_unix_time(self.scrap_date(str(msg)) or msg["Date"])
+        message["sender"] = msg["From"] or ""
         message["subject"] = self._clear_subject(msg["Subject"])
         message["content"] = str(result.get_payload(decode=True))
         message["content_extension"] = mimetypes.guess_extension(result.get_content_type())
+
+        if message["date"] > 2147483647:
+            message["date"] = None
 
         # message["raw_message"] = msg
         # message["structure"] = _structure(msg)
@@ -181,7 +240,9 @@ class IMAP:
             print('message uid: ', uid)
 
             message = self.get_message(uid)
-            messages.append(message)
+
+            if message:
+                messages.append(message)
 
         return messages
 
