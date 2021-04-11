@@ -1,4 +1,17 @@
 {
+  "select_session": "Выберите сессию",
+  "save_path_isn't_correct": "Неправильный указаный путь",
+  "apply_the_changes": "Применить изменения?",
+  "name_is_empty": "Пустое имя",
+  "wrong_name": "Неверное имя ('/', ':', '*', '?', '\"', '<', '>', '|')",
+  "session_was_added": "Сессия добавлена",
+  "session_is_already_exists": "Сессия уже существует",
+  "session_was_deleted": "Сессия удалена",
+  "no_such_session": "Такой сессии не существует",
+  "file_is_not_.txt": "Файл не является .txt",
+  "input_link_or_choose_file": "Введите ссылку или выберите файл",
+  "mails_were_loaded": "Ящики загружены",
+
   "menuLoad": "Загрузить",
   "actionLoad_mails": "Загрузить ящики",
   "menuChoose_session": "Выбрать сессию",

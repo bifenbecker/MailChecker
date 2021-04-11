@@ -10,6 +10,18 @@
     <height>586</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>833</width>
+    <height>586</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>833</width>
+    <height>586</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Mails</string>
   </property>

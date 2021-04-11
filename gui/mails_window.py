@@ -15,6 +15,8 @@ class Ui_MailsWindow(object):
     def setupUi(self, MailsWindow):
         MailsWindow.setObjectName("MailsWindow")
         MailsWindow.resize(833, 586)
+        MailsWindow.setMinimumSize(QtCore.QSize(833, 586))
+        MailsWindow.setMaximumSize(QtCore.QSize(833, 586))
         self.horizontalLayoutWidget = QtWidgets.QWidget(MailsWindow)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 831, 581))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")

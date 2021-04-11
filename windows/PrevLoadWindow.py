@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 import PyQt5,MailData,ThreadProc
 from PyQt5 import QtWidgets, QtCore
@@ -7,40 +8,34 @@ from PyQt5.QtWidgets import QFileDialog
 
 from Settings import Settings
 from gui import prev_window
-from windows import DialogWindow
+from windows import App
 
 
-class App(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
-    resized = QtCore.pyqtSignal()
+
+class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def __init__(self,path):
-        super(App, self).__init__()
+        super(PrevLoad, self).__init__()
+
         self.setupUi(self)
         self.path = path
         self.thread = None
         self.f = None
-        self.dialog_warning = DialogWindow.Dialog()
         self.pushButton_swap_file.clicked.connect(self.swap_to_file_load)
         self.pushButton_swap_link.clicked.connect(self.swap_to_link_load)
         self.pushButton_load_file.clicked.connect(self.load_file)
         self.pushButton_load_data_file.clicked.connect(self.load_data)
         self.pushButton_load_data_link.clicked.connect(self.load_data)
         self.pushButton_Cancel_Load.clicked.connect(self.cancel_load)
-        Settings.setUp(self)
-
+        self.lang = Settings.setUp(self)[1]
 
     def load_file(self):
         res = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         fname = res[0]
         if fname.split(".")[-1] == "txt":
             with open(fname) as file:
-                self.dialog_warning.setWindowModality(Qt.ApplicationModal)
-                self.dialog_warning.set_mes("File is opened\nLines:{0}".format(len(file.readlines())))
-                self.dialog_warning.show()
                 self.f = fname
         elif res[1] != "" and fname.split(".")[-1] != "text":
-            self.dialog_warning.setWindowModality(Qt.ApplicationModal)
-            self.dialog_warning.set_mes("File is not .txt")
-            self.dialog_warning.show()
+            App.App.show_warning_mes(self.lang['file_is_not_.txt'])
 
     def load_data(self):
         if self.f is not None:
@@ -51,9 +46,8 @@ class App(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
                     self.thread.finished.connect(self.go_main_window)
                     self.thread.start()
         else:
-            self.dialog_warning.setWindowModality(Qt.ApplicationModal)
-            self.dialog_warning.set_mes("Input link or choose file")
-            self.dialog_warning.show()
+            App.App.show_warning_mes(self.lang["input_link_or_choose_file"])
+
 
     def cancel_load(self):
         if self.thread is not None:
@@ -66,9 +60,7 @@ class App(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.go_main_window)
         self.thread = None
-        self.dialog_warning.setWindowTitle("Success")
-        self.dialog_warning.set_mes("Mails were loaded")
-        self.dialog_warning.show()
+        App.App.show_warning_mes(self.lang["mails_were_loaded"])
         self.close()
 
     def set_progress_bar(self,value):
@@ -80,11 +72,4 @@ class App(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def swap_to_link_load(self):
         self.stackedWidget.setCurrentIndex(0)
 
-
-    def resizeEvent(self, event):
-        self.resized.emit()
-        self.stackedWidget.setGeometry(QtCore.QRect(0,0,self.size().width(),self.size().height()))
-        self.gridLayout.setGeometry(QtCore.QRect(0,0,self.stackedWidget.size().width(),self.stackedWidget.size().height()))
-        self.gridLayout_Load.setGeometry(QtCore.QRect(0, 0, self.size().width(), self.size().height()))
-        return super(App, self).resizeEvent(event)
 

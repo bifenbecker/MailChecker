@@ -2,13 +2,13 @@ import json
 import os
 import sqlite3
 import time
-import PyQt5,sys,MailData,ExceptionBreak
+import PyQt5, sys, MailData, ExceptionBreak
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog
+from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
 
 from Settings import Settings
-from windows import PrevLoadWindow,AddSessionWindow, DeleteSessionWindow,SettingsWindow,DialogWindow,MailsWindow,MailWindow
+from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
 from gui import MainWindow
 
 
@@ -18,7 +18,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.initUi()
 
     def init_sesions(self):
-        path_sesions = os.path.join(os.getcwd(),'sessions')
+        path_sesions = os.path.join(os.getcwd(), 'sessions')
         sessions = os.listdir(path_sesions)
         for session in sessions:
             self.action = QtWidgets.QAction(self)
@@ -30,12 +30,10 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
     def initUi(self):
         self.setupUi(self)
         self.init_sesions()
-        # print(self.treeWidget.children())
         self.pushButton_Search.setEnabled(False)
         self.path_session = None
         self.search_result = None
-        self.dialog_warning = DialogWindow.Dialog()
-        Settings.setUp(self)
+        self.setup()
         self.actionLoad_mails.triggered.connect(self.Load)
         self.actionAdd_Session.triggered.connect(self.add_session)
         self.actionDelete_Session.triggered.connect(self.delete_session)
@@ -48,6 +46,8 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Search.clicked.connect(self.enable_search_lines)
         self.show()
 
+    def setup(self):
+        self.lang = Settings.setUp(self)[1]
 
     def enable_search_lines(self):
         if self.checkBox_Search.isChecked():
@@ -67,7 +67,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
 
     def search(self):
         connection = sqlite3.connect(
-        os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
+            os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
         cursor = connection.cursor()
         sql_search = "SELECT * FROM mails WHERE "
         req = ""
@@ -79,7 +79,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
                 req += sql[-1] + " "
                 parametrs.append(sql[1])
         sql_search = sql_search[:-5]
-        cursor.execute(sql_search,tuple(parametrs))
+        cursor.execute(sql_search, tuple(parametrs))
         res = cursor.fetchall()
         self.result = res
         item = QtWidgets.QTreeWidgetItem()
@@ -93,29 +93,28 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         checked = False
         if self.checkBox_Only_Seen.isChecked():
             checked = True
-            return (checked,"1", "seen")
-        return (checked,"")
+            return checked, "1", "seen"
+        return checked, ""
 
     def _check_date(self):
         checked = False
         if self.checkBox_Date.isChecked():
             checked = True
             date = self.dateEdit_date.text()
-            return (checked,date,"date")
-        return (checked,"")
+            return (checked, date, "date")
+        return (checked, "")
 
     def show_mails_window(self):
         self.mails_window = MailsWindow.App(self.result)
         self.mails_window.show()
 
     def show_settings_window(self):
-        self.settings_window = SettingsWindow.App(self,self.dialog_warning)
+        self.settings_window = SettingsWindow.App(self)
         self.settings_window.show()
 
     def add_session(self):
         self.add_session_window = AddSessionWindow.App(self)
         self.add_session_window.show()
-
 
     def delete_session(self):
         self.delete_session_window = DeleteSessionWindow.App(self)
@@ -128,15 +127,22 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Search.setEnabled(True)
         self.action = self.sender()
         self.label_Active_Session.setText(self.action.objectName())
-        self.path_session = os.path.join(os.getcwd(),self.action.objectName())
+        self.path_session = os.path.join(os.getcwd(), self.action.objectName())
 
     def Load(self):
         if self.path_session is not None:
-            self.prev_load_menu = PrevLoadWindow.App(self.label_Active_Session.text())
+            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.label_Active_Session.text())
             self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
             self.prev_load_menu.show()
         else:
-           self.dialog_warning.set_mes("Select or add session")
-           self.dialog_warning.setWindowModality(Qt.ApplicationModal)
-           self.dialog_warning.show()
+            App.show_warning_mes(self.lang["select_session"])
 
+    @staticmethod
+    def show_warning_mes(mes):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(mes)
+        msgBox.setStyleSheet("font-size:12px;\n")
+        msgBox.setWindowTitle("Warning")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        returnValue = msgBox.exec()

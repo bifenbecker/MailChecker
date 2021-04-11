@@ -8,11 +8,10 @@ from gui import settings_window
 from PyQt5 import QtWidgets, QtGui
 
 class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
-    def __init__(self,main_window,dialog):
+    def __init__(self,main_window):
         super(App, self).__init__()
         self.setupUi(self)
         self.window = main_window
-        self.dialog = dialog
         self.pushButton_Save_Settings.clicked.connect(self.save_settings)
         self.pushButton_Browse.clicked.connect(self.browse)
         self.default_settings()
@@ -51,7 +50,6 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
             self.setStyleSheet("")
             self.window.setStyleSheet(style)
             self.setStyleSheet(style)
-            self.dialog.setStyleSheet(style)
 
     def save_settings(self):
         msgBox = QMessageBox()
@@ -66,6 +64,7 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
                 json.dump(settings, json_file)
             Settings.setUp(self)
             Settings.setUp(self.window)
+            self.window.setup()
 
 
     def get_settings(self):

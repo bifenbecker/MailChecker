@@ -15,10 +15,13 @@ class Settings:
         #Translate
         if settings['Language'] == "English":
             with open("languages/EN.json") as lang:
-                Settings._set_lang(json.load(lang),window)
+                translate_lang = json.load(lang)
+                Settings._set_lang(translate_lang,window)
         else:
             with open("languages/RU.json",encoding='utf-8') as lang:
-                Settings._set_lang(json.load(lang),window)
+                translate_lang = json.load(lang)
+                Settings._set_lang(translate_lang,window)
+        return (settings,translate_lang)
 
     @staticmethod
     def _set_lang(dict,window):

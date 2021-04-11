@@ -1,4 +1,18 @@
 {
+  "select_session": "Select session",
+  "save_path_isn't_correct": "Save path isn't correct",
+  "apply_the_changes": "Do you want to apply the changes?",
+  "name_is_empty": "Name is empty",
+  "wrong_name": "Wrong name ('/', ':', '*', '?', '\"', '<', '>', '|')",
+  "session_was_added": "Session was added",
+  "session_is_already_exists": "Session is already exists",
+  "session_was_deleted": "Session was deleted",
+  "no_such_session": "No such session",
+  "file_is_not_.txt": "File is not .txt",
+  "input_link_or_choose_file": "Input link or choose file",
+  "mails_were_loaded": "Mails were loaded",
+
+
   "menuLoad": "Load",
   "actionLoad_mails": "Load mails",
   "menuChoose_session": "Select session",
