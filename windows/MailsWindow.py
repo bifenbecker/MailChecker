@@ -17,10 +17,10 @@ class App(QtWidgets.QWidget, mails_window.Ui_MailsWindow):
     def fill_tree_widget(self):
         for mail in self.search_result:
             item = QtWidgets.QTreeWidgetItem()
-            item.setText(0, mail[3])
-            item.setText(1, mail[4])
-            item.setText(2, mail[5])
-            item.setText(3, mail[6])
+            item.setText(0, str(mail[1]))
+            item.setText(1, mail[3])
+            item.setText(2, mail[2])
+            item.setText(3, mail[5])
             self.treeWidget.addTopLevelItem(item)
             self.treeWidget.expandAll()
 
@@ -28,6 +28,6 @@ class App(QtWidgets.QWidget, mails_window.Ui_MailsWindow):
         indexes = self.treeWidget.selectionModel().selectedRows(col)
         for index in sorted(indexes):
             i = index.row()
-            content = self.search_result[i][7]
+            content = self.search_result[i][4]
         self.mail_window = MailWindow.App(content)
         self.mail_window.show()

@@ -1,7 +1,8 @@
 import asyncio
 import json
+import os
 
-import PyQt5,MailData,ThreadProc
+import PyQt5,ThreadProc
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
@@ -15,7 +16,6 @@ from windows import App
 class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def __init__(self,path):
         super(PrevLoad, self).__init__()
-
         self.setupUi(self)
         self.path = path
         self.thread = None
@@ -31,17 +31,21 @@ class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def load_file(self):
         res = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         fname = res[0]
+        self.file_name = fname.split('/')[-1].split('.')[0]
         if fname.split(".")[-1] == "txt":
             with open(fname) as file:
-                self.f = fname
+                self.f = file
+                with open(os.path.join(self.path,'mails.txt'),'w') as mails:
+                    mails.write(file.read())
         elif res[1] != "" and fname.split(".")[-1] != "text":
             App.App.show_warning_mes(self.lang['file_is_not_.txt'])
 
+
     def load_data(self):
         if self.f is not None:
-            with open(self.f) as file:
+            with open(os.path.join(self.path,'mails.txt')) as file:
                 if self.thread is None:
-                    self.thread = ThreadProc.TreadProc(path=self.path,args=file.readlines())
+                    self.thread = ThreadProc.TreadProc(path=self.path,args=file.readlines(),fname=self.file_name)
                     self.thread.change_value.connect(self.set_progress_bar)
                     self.thread.finished.connect(self.go_main_window)
                     self.thread.start()

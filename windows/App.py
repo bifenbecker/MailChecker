@@ -1,12 +1,16 @@
 import json
 import os
+import datetime as DT
 import sqlite3
 import time
-import PyQt5, sys, MailData, ExceptionBreak
+from collections import defaultdict
+
+import PyQt5, sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
 
+from QTreeItem import QTreeItem
 from Settings import Settings
 from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
 from gui import MainWindow
@@ -66,46 +70,86 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
             self.pushButton_Search.setEnabled(False)
 
     def search(self):
-        connection = sqlite3.connect(
-            os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
+        connection = sqlite3.connect(os.path.join(self.path_session, 'database.db'))
         cursor = connection.cursor()
-        sql_search = "SELECT * FROM mails WHERE "
+        self.search_result, data, req = self.get_search_result()
+
+        for key in data:
+            user = cursor.execute("SELECT * FROM Account WHERE id=?",(key,)).fetchall()[0]
+            item = QTreeItem(data[key])
+            item.setText(0, user[1])
+            item.setText(1, user[2])
+            item.setText(2, req)
+            item.setText(3, str(len(data[key])))
+            self.treeWidget.addTopLevelItem(item)
+
+
+    def get_search_result(self):
+        connection = sqlite3.connect(os.path.join(self.path_session, 'database.db'))
+        cursor = connection.cursor()
+        filtres = [self._check_only_seen(),self._check_date()]
+        text_search = [self._check_from(),self._check_subject(),self._check_body()]
         req = ""
-        sqls = [self._check_only_seen(), self._check_date()]
-        parametrs = []
-        for sql in sqls:
-            if sql[0]:
-                sql_search += sql[-1] + "=? AND "
-                req += sql[-1] + " "
-                parametrs.append(sql[1])
-        sql_search = sql_search[:-5]
-        cursor.execute(sql_search, tuple(parametrs))
+        parameters = []
+        sql_search = "SELECT * FROM Message WHERE "
+        for fl in filtres:
+            if fl[0]:
+                req += fl[2] + " = " + fl[-1] + ","
+                sql_search += fl[1] + " AND "
+                parameters.append(fl[-1])
+
+        for ts in text_search:
+            if ts[0] and self.checkBox_Search.isChecked():
+                req += ts[2] + " = " + ts[-1]
+                sql_search += ts[1] + " OR "
+                parameters.append("%" + ts[-1] + "%")
+
+        if not self.checkBox_Search.isChecked():
+            sql_search = sql_search[:-4]
+        else:
+            sql_search = sql_search[:-3]
+        req = req[:-1]
+        cursor.execute(sql_search,tuple(parameters))
         res = cursor.fetchall()
-        self.result = res
-        item = QtWidgets.QTreeWidgetItem()
-        item.setText(0, res[0][0])
-        item.setText(1, res[0][1])
-        item.setText(2, req)
-        item.setText(3, str(len(res)))
-        self.treeWidget.addTopLevelItem(item)
+        data = {}
+        for mail in res:
+            if mail[-1] not in list(data.keys()):
+                data[mail[-1]] = []
+
+            data[mail[-1]].append(mail)
+
+
+        return res,data,req
+
+
+    def _check_from(self):
+        if self.lineEdit_From.text() != "":
+            return True, "UPPER(sender) LIKE UPPER(?)", "from", self.lineEdit_From.text()
+        return False, "", ""
+
+    def _check_subject(self):
+        if self.lineEdit_Subject.text() != "":
+            return True, "UPPER(subject) LIKE UPPER(?)", "subject", self.lineEdit_Subject.text()
+        return False, "", ""
+
+    def _check_body(self):
+        if self.lineEdit_Body.text() != "":
+            return True, "UPPER(content) LIKE UPPER(?)","body", self.lineEdit_Body.text()
+        return False, "", ""
 
     def _check_only_seen(self):
-        checked = False
         if self.checkBox_Only_Seen.isChecked():
-            checked = True
-            return checked, "1", "seen"
-        return checked, ""
+            return True,"seen =? ","seen", "1"
+        return False,"",""
 
     def _check_date(self):
-        checked = False
         if self.checkBox_Date.isChecked():
-            checked = True
-            date = self.dateEdit_date.text()
-            return (checked, date, "date")
-        return (checked, "")
+            date = str(int(self.dateEdit_date.dateTime().toPyDateTime().timestamp()))
+            return True,"date >= ?" ,"date", date
+        return False,"",""
 
-    def show_mails_window(self):
-        self.mails_window = MailsWindow.App(self.result)
+    def show_mails_window(self,item,column):
+        self.mails_window = MailsWindow.App(item.data)
         self.mails_window.show()
 
     def show_settings_window(self):
@@ -125,13 +169,14 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Date.setEnabled(True)
         self.dateEdit_date.setEnabled(True)
         self.checkBox_Search.setEnabled(True)
+        self.treeWidget.clear()
         self.action = self.sender()
         self.label_Active_Session.setText(self.action.objectName())
-        self.path_session = os.path.join(os.getcwd(), self.action.objectName())
+        self.path_session = os.path.join(os.getcwd(),'sessions', self.action.objectName())
 
     def Load(self):
         if self.path_session is not None:
-            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.label_Active_Session.text())
+            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.path_session)
             self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
             self.prev_load_menu.show()
         else:
