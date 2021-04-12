@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
 
+from Connections import Connections
 from Settings import Settings
 from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
 from gui import MainWindow
@@ -66,6 +67,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
             self.pushButton_Search.setEnabled(False)
 
     def search(self):
+        print(Connections.connections)
         connection = sqlite3.connect(
             os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
         cursor = connection.cursor()
