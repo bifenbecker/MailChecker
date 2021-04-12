@@ -16,6 +16,7 @@ class Message(db.Entity):
     subject = orm.Optional(str)
     content = orm.Required(str)
     content_extension = orm.Required(str)
+    seen = orm.Required(bool)
     owner = orm.Required(Account)
 
     orm.composite_key(sender, content)

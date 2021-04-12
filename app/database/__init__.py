@@ -1,1 +1,2 @@
-__all__ = ["database", "models"]
+from database.database import *
+from database.models import *

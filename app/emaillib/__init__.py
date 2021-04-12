@@ -1,1 +1,1 @@
-__all__ = ["imap"]
+from emaillib.imap import *

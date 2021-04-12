@@ -551,50 +551,47 @@
 # #             self.messages.append(message)
 # #
 # #     return self.messages
+import os
 
-import asyncio
-from aioimaplib import aioimaplib
-
+import imaplib
 import email
 
+import threading
 
-@asyncio.coroutine
-def wait_for_new_message(host, user, password):
-    imap_client = aioimaplib.IMAP4(host=host)
-    yield from imap_client.wait_hello_from_server()
-
-    yield from imap_client.login(user, password)
-    yield from imap_client.select()
-
-    asyncio.async(imap_client.idle())
-    id = 0
-    while True:
-        msg = yield from imap_client.wait_server_push()
-        print('--> received from server: %s' % msg)
-        if 'EXISTS' in msg:
-            id = msg.split()[0]
-            imap_client.idle_done()
-            break
-
-    result, data = yield from imap_client.fetch(id, '(RFC822)')
-    email_message = email.message_from_bytes(data[0])
-
-    attachments = []
-    body = ''
-    for part in email_message.walk():
-        if part.get_content_maintype() == 'multipart':
-            continue
-        if part.get_content_maintype() == 'text' and 'attachment' not in part.get('Content-Disposition', ''):
-            body = part.get_payload(decode=True).decode(part.get_param('charset', 'ascii')).strip()
-        else:
-            attachments.append(
-                {'type': part.get_content_type(), 'filename': part.get_filename(), 'size': len(part.as_bytes())})
-
-    print('attachments : %s' % attachments)
-    print('body : %s' % body)
-    yield from imap_client.logout()
+from database.database import SQLiteDB
+from emaillib import IMAP
 
 
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(wait_for_new_message('imap.gmail.com', 'ikomicin@gmail.com', 'NikoNikoNi4'))
+def get_messages(conn, uids_list):
+    for uid in uids_list:
+        thread = threading.Thread(target=conn.get_message, args=(uid,))
+        thread.start()
+
+
+def get_message(conn, uid):
+    return conn.fetch(uid, '(RFC822)')[1]
+
+
+db_location = os.path.join(os.getcwd(), 'database.sqlite')
+create_db = True
+create_tables = True
+
+sqlite_db = SQLiteDB(db_location, create_db, create_tables)
+
+conn = IMAP("ikomicin@gmail.com", "NikoNikoNi4")
+
+uids_list = conn.get_uids(_to=100)
+print(uids_list)
+conn.get_messages(uids_list)
+
+# conn = imaplib.IMAP4_SSL("imap.gmail.com")
+# conn.login("ikomicin@gmail.com", "NikoNikoNi4")
+# conn.select()
+#
+# status, email_ids = conn.search(None, "ALL")
+#
+# uids_list = email_ids[0].split()
+#
+# for uid in uids_list:
+#     thread = threading.Thread(target=get_message, args=(conn, uid))
+#     thread.start()

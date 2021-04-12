@@ -1,14 +1,20 @@
-import emaillib
-from emaillib.imap import IMAP
+import time
 
-from database.models import Account, Message
-from database.database import SQLiteDB
+import emaillib
+from emaillib import IMAP
+
+from database import SQLiteDB
+from database import Account, Message
 
 import os
 from datetime import datetime
 
 from pony import orm
 import threading
+
+import selectors
+
+selector = selectors.DefaultSelector()
 
 
 def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> list:
@@ -24,6 +30,25 @@ def get_accounts(file_path: str = "data\\mails.txt", separator: str = ':') -> li
             accounts.append({"login": data_list[0], "password": data_list[1]})
 
     return accounts
+
+
+def get_messages(conn: IMAP, uids_list: list) -> list:
+    """Get messages from email address and fill messages field of IMAP instance
+
+    uids_list - list of messages id's to receive messages"""
+
+    messages = []
+
+    for uid in uids_list:
+
+        print('message uid: ', uid)
+
+        message = conn.get_message(uid)
+
+        if message:
+            messages.append(message)
+
+    return messages
 
 
 @orm.db_session
@@ -61,16 +86,16 @@ def validation(db: SQLiteDB, protocol: IMAP, account: dict, save_path: str, dir_
 
     except emaillib.imap.Error:
         account['is_valid'] = False
+        conn = None
 
         with open(os.path.join(save_path, "BAD.txt"), 'a') as bad:
             bad.write(save_info)
-
-        return None, None
 
     except Exception:
         with open(os.path.join(save_path, "ERROR.txt"), 'a') as error:
             error.write(save_info)
 
+        print("Done")
         return None, None
 
     unique_fields = {
@@ -78,6 +103,12 @@ def validation(db: SQLiteDB, protocol: IMAP, account: dict, save_path: str, dir_
     }
 
     acc = db.add_in_table(Account, data=account, unique_fields=unique_fields)[1]
+
+    print("Done")
+
+    if conn:
+        amount = add_messages(db, conn, acc, search_params or {})
+        log_query(save_path, search_params["_filter"], account, amount)
 
     return conn, acc
 
@@ -89,7 +120,7 @@ def log_query(save_path: str, query: str, account: dict, amount: int):
 
     save_path = os.path.join(save_path, f"{query}.txt")
 
-    if os.path.exists(save_path) and rm_log or not os.path.exists(save_path):
+    if rm_log:
         open(save_path, 'w')
         rm_log = False
 
@@ -97,7 +128,6 @@ def log_query(save_path: str, query: str, account: dict, amount: int):
         file.write(f"{account['login']}:{account['password']} | {amount}\n")
 
 
-@orm.db_session
 def add_messages(db: SQLiteDB, conn: IMAP, acc: Account, search_params: dict) -> int:
     """Add messages to Message table in database"""
 
@@ -124,17 +154,16 @@ def _main(db: SQLiteDB, accounts_list: list, save_path: str, dir_name: str, sear
 
         print('\naccount:', accounts_list.index(account), account["login"])
 
-        conn, acc = validation(db, IMAP, account, save_path, dir_name)
+        # conn, acc = validation(db, IMAP, account, save_path, dir_name)
 
-        # thread = threading.Thread(target=add_messages, args=(imap, db, acc))
-        # thread.start()
+        thread = threading.Thread(target=validation, args=(db, IMAP, account, save_path, dir_name))
+        thread.start()
 
-        if not search_params:
-            search_params = {}
-
-        if conn and acc:
-            amount = add_messages(db, conn, acc, search_params)
-            log_query(os.path.join(save_path, dir_name), search_params["_filter"], account, amount)
+        # if conn:
+        #     # thread = threading.Thread(target=add_messages, args=(db, conn, acc, search_params or {}))
+        #     # thread.start()
+        #     amount = add_messages(db, conn, acc, search_params or {})
+        #     log_query(os.path.join(save_path, dir_name), search_params["_filter"], account, amount)
 
 
 if __name__ == '__main__':
@@ -169,8 +198,9 @@ if __name__ == '__main__':
 
     print(IMAP.get_filter(filters), end='\n\n')
 
-    accounts_list = get_accounts("data\\mails.txt", separator=':')
-    _main(sqlite_db, accounts_list[75:], save_path, file_name, search_params)
+    accounts_list = get_accounts(file_path, separator=':')
+
+    _main(sqlite_db, accounts_list[:], save_path, file_name, search_params)
 
     # sqlite_db.show_table(Account, end='\n\n')
     # sqlite_db.show_table(Message)
