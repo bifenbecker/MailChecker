@@ -326,7 +326,7 @@
            <rect>
             <x>10</x>
             <y>20</y>
-            <width>521</width>
+            <width>656</width>
             <height>231</height>
            </rect>
           </property>
@@ -351,6 +351,9 @@
                <family>Seb Neue</family>
                <pointsize>16</pointsize>
               </font>
+             </property>
+             <property name="displayFormat">
+              <string>dd.mm.yyyy</string>
              </property>
             </widget>
            </item>
