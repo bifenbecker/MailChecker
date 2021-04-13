@@ -1,12 +1,10 @@
 import json
 import os
-import sqlite3
-import time
-import PyQt5, sys, MailData, ExceptionBreak
+import sqlite3, ThreadProc
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
-
+from Connections import *
 from Connections import Connections
 from Settings import Settings
 from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
@@ -22,16 +20,18 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         path_sesions = os.path.join(os.getcwd(), 'sessions')
         sessions = os.listdir(path_sesions)
         for session in sessions:
-            self.action = QtWidgets.QAction(self)
-            self.action.setObjectName(session)
-            self.action.setText(session)
-            self.action.triggered.connect(self.select_session)
-            self.menuChoose_session.addAction(self.action)
+            if os.path.isdir(os.path.join('sessions',session)):
+                self.action = QtWidgets.QAction(self)
+                self.action.setObjectName(session)
+                self.action.setText(session)
+                self.action.triggered.connect(self.select_session)
+                self.menuChoose_session.addAction(self.action)
 
     def initUi(self):
         self.setupUi(self)
         self.init_sesions()
         self.pushButton_Search.setEnabled(False)
+        self.thread = None
         self.path_session = None
         self.search_result = None
         self.setup()
@@ -45,6 +45,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Only_Seen.clicked.connect(self.search_btn_enable)
         self.checkBox_Search.clicked.connect(self.search_btn_enable)
         self.checkBox_Search.clicked.connect(self.enable_search_lines)
+        Connections.load_main_window(self)
         self.show()
 
     def setup(self):
@@ -67,44 +68,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
             self.pushButton_Search.setEnabled(False)
 
     def search(self):
-        print(Connections.connections)
-        connection = sqlite3.connect(
-            os.path.join('sessions', self.label_Active_Session.text(), f'{self.label_Active_Session.text()}.db'))
-        cursor = connection.cursor()
-        sql_search = "SELECT * FROM mails WHERE "
-        req = ""
-        sqls = [self._check_only_seen(), self._check_date()]
-        parametrs = []
-        for sql in sqls:
-            if sql[0]:
-                sql_search += sql[-1] + "=? AND "
-                req += sql[-1] + " "
-                parametrs.append(sql[1])
-        sql_search = sql_search[:-5]
-        cursor.execute(sql_search, tuple(parametrs))
-        res = cursor.fetchall()
-        self.result = res
-        item = QtWidgets.QTreeWidgetItem()
-        item.setText(0, res[0][0])
-        item.setText(1, res[0][1])
-        item.setText(2, req)
-        item.setText(3, str(len(res)))
-        self.treeWidget.addTopLevelItem(item)
-
-    def _check_only_seen(self):
-        checked = False
-        if self.checkBox_Only_Seen.isChecked():
-            checked = True
-            return checked, "1", "seen"
-        return checked, ""
-
-    def _check_date(self):
-        checked = False
-        if self.checkBox_Date.isChecked():
-            checked = True
-            date = self.dateEdit_date.text()
-            return (checked, date, "date")
-        return (checked, "")
+        pass
 
     def show_mails_window(self):
         self.mails_window = MailsWindow.App(self.result)
@@ -123,17 +87,34 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.delete_session_window.show()
 
     def select_session(self):
+        Connections.reset()
         self.checkBox_Only_Seen.setEnabled(True)
         self.checkBox_Date.setEnabled(True)
         self.dateEdit_date.setEnabled(True)
         self.checkBox_Search.setEnabled(True)
         self.action = self.sender()
         self.label_Active_Session.setText(self.action.objectName())
-        self.path_session = os.path.join(os.getcwd(), self.action.objectName())
+        self.path_session = os.path.join(os.getcwd(),'sessions', self.action.objectName())
+        if self.thread is None:
+            self.thread = ThreadProc.TreadProc(path=self.path_session)
+            self.thread.change_value.connect(self.set_progress_bar)
+            self.thread.finished.connect(self.succsessful_load)
+            self.thread.start()
+            self.label_status.setText("Load...")
+
+    def succsessful_load(self):
+        self.progressBar.setValue(0)
+        self.label_status.setText("OK")
+        self.thread.change_value.disconnect(self.set_progress_bar)
+        self.thread.finished.disconnect(self.succsessful_load)
+        self.thread = None
+
+    def set_progress_bar(self,value):
+        self.progressBar.setValue(value)
 
     def Load(self):
         if self.path_session is not None:
-            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.label_Active_Session.text())
+            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.path_session)
             self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
             self.prev_load_menu.show()
         else:

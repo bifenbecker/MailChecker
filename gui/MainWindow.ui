@@ -78,24 +78,24 @@
             <x>10</x>
             <y>20</y>
             <width>361</width>
-            <height>411</height>
+            <height>471</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,2">
            <property name="leftMargin">
             <number>4</number>
            </property>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_Accounts">
+           <item row="4" column="1">
+            <widget class="QLabel" name="label_Checked">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_checked">
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_Accounts">
              <property name="text">
-              <string>Checked:</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -110,6 +110,13 @@
             <widget class="QLabel" name="label_valid">
              <property name="text">
               <string>Valid:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_checked">
+             <property name="text">
+              <string>Checked:</string>
              </property>
             </widget>
            </item>
@@ -137,24 +144,10 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_Checked">
+           <item row="6" column="1">
+            <widget class="QLabel" name="label_Valid">
              <property name="text">
               <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QLabel" name="label_Unvalid">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="Line" name="line_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -172,8 +165,15 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
-            <widget class="QLabel" name="label_Valid">
+           <item row="3" column="0">
+            <widget class="Line" name="line_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="label_Unvalid">
              <property name="text">
               <string/>
              </property>
@@ -181,6 +181,27 @@
            </item>
            <item row="5" column="0">
             <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_active_session">
+             <property name="text">
+              <string>Active session</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="Line" name="line_7">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -207,26 +228,46 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_active_session">
-             <property name="text">
-              <string>Active session</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="Line" name="line_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_8">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
+           <item row="9" column="0" colspan="2">
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,2,1">
+             <item>
+              <widget class="QLabel" name="label_Connections">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Connections</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QProgressBar" name="progressBar">
+               <property name="styleSheet">
+                <string notr="true">height: 17px;</string>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="textVisible">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_status">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

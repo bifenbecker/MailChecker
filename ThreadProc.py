@@ -1,37 +1,27 @@
-import threading
-import time,asyncio
+from threading import *
+import os, json
 from PyQt5.QtCore import QThread, pyqtSignal
-from multiprocessing import Process,Lock
-import Connections
+from Connections import *
 
 
 class TreadProc(QThread):
     change_value = pyqtSignal(float)
 
-    def __init__(self,path,args):
+    def __init__(self,path):
         super().__init__()
-        self.args = args
-        self.path = path
+        self.path_session = path
+
 
     def run(self):
-        proc = 100 / len(self.args)
+        with open(os.path.join(self.path_session, "users.json")) as json_file:
+            users = json.load(json_file)
+        proc = 100 / len(users)
         chv = proc
-        preccess = [Process(target=Connections.Connections.get_connections, args=(arg.split(":")[0],arg.split(":")[1].strip(),)) for arg in self.args]
-        for process in preccess:
-            process.start()
-            self.change_value.emit(chv)
-            chv += proc
-        for process in preccess:
-            process.join()
-        # asyncio.run(self.go())
-
-    async def go(self):
-        proc = 100 / len(self.args)
-        chv = proc
-        for arg in self.args:
-            mail = arg.split(":")[0]
-            passwd = arg.split(":")[-1].strip()
-            await Connections.Connections.get_connections(mail,passwd)
+        tasks = [Thread(target=Connections.get_connection, args=(user,)) for user in users]
+        for task in tasks:
+            task.start()
+        for task in tasks:
+            task.join()
             self.change_value.emit(chv)
             chv += proc
 

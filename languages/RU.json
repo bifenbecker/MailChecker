@@ -25,6 +25,7 @@
   "label_checked": "Проверено",
   "label_unvalid": "Не валидные",
   "label_valid": "Валидные",
+  "label_Connections": "Подключения",
   "treeWidget_main_window_0": "Адрес",
   "treeWidget_main_window_1": "Пароль",
   "treeWidget_main_window_2": "Запрос",

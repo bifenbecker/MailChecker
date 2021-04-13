@@ -55,6 +55,7 @@ class Settings:
             window.label_subject.setText(dict["label_subject"])
             window.label_body.setText(dict["label_body"])
             window.pushButton_Search.setText(dict["pushButton_Search"])
+            window.label_Connections.setText(dict["label_Connections"])
 
         if window.objectName() == "SettingsWindow":
             window.setWindowTitle(dict["setting_title"])
