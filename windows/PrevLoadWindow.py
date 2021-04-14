@@ -14,9 +14,10 @@ from windows import App
 
 
 class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
-    def __init__(self,path):
+    def __init__(self,path,main_window):
         super(PrevLoad, self).__init__()
         self.setupUi(self)
+        self.main_window = main_window
         self.path = path
         self.f = None
         self.thread = None
@@ -76,6 +77,7 @@ class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.go_main_window)
         self.thread = None
+        self.main_window.label_status.setText("OK")
         App.App.show_warning_mes(self.lang["mails_were_loaded"])
         self.close()
 

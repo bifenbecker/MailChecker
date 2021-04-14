@@ -216,8 +216,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.progressBar.setValue(0)
         self.label_status.setText("OK")
         self.isLoad_Mails = True
-        if self._check_checkBoxes() and not self.pushButton_Search.isEnabled():
-            self.pushButton_Search.setEnabled(True)
+        self.search_btn_enable()
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.succsessful_load)
         self.thread = None
@@ -227,7 +226,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
 
     def Load(self):
         if self.path_session is not None:
-            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.path_session)
+            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.path_session,self)
             self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
             self.prev_load_menu.show()
         else:
