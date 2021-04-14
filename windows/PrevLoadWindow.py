@@ -16,9 +16,9 @@ from windows import App
 class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def __init__(self,path):
         super(PrevLoad, self).__init__()
-
         self.setupUi(self)
         self.path = path
+        self.f = None
         self.thread = None
         self.pushButton_swap_file.clicked.connect(self.swap_to_file_load)
         self.pushButton_swap_link.clicked.connect(self.swap_to_link_load)
@@ -31,6 +31,7 @@ class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def load_file(self):
         res = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         fname = res[0]
+        self.file_name = res[0].split('/')[-1].split('.')[0]
         if fname.split(".")[-1] == "txt":
             with open(fname) as file:
                 self.f = fname
@@ -45,7 +46,7 @@ class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
             user_pass = line.split(":")[-1].strip()
             user = {"mail":user_mail,"password":user_pass}
             res.append(user)
-        with open(os.path.join(self.path,"users.json"),'w+') as json_file:
+        with open(os.path.join(self.path,"{0}.json".format(self.file_name)),'w+') as json_file:
             json.dump(res,json_file)
 
 

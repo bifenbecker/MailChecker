@@ -181,6 +181,16 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.delete_session_window = DeleteSessionWindow.App(self)
         self.delete_session_window.show()
 
+
+    def isFile_json_in_session(self):
+        isFile = False
+        files = os.listdir(self.path_session)
+        for file in files:
+            if ".json" in file:
+                isFile = True
+
+        return isFile
+
     def select_session(self):
         Connections.reset()
         self.checkBox_Only_Seen.setEnabled(True)
@@ -190,7 +200,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.action = self.sender()
         self.label_Active_Session.setText(self.action.objectName())
         self.path_session = os.path.join(os.getcwd(),'sessions', self.action.objectName())
-        if os.path.exists(os.path.join(self.path_session,'users.json')):
+        if self.isFile_json_in_session():
             if Internet.run_check():
                 if self.thread is None:
                     self.thread = ThreadProc.TreadProc(path=self.path_session)

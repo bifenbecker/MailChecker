@@ -21,10 +21,15 @@ class Connections:
     UNVALID_Accounts = 0
 
     @staticmethod
-    def get_connection(user: dict):
+    def get_connection(user: dict,path_session: str):
+        f_good = open(os.path.join(path_session, 'GOOD.txt'), 'a')
+        f_bad = open(os.path.join(path_session, 'BAD.txt'), 'a')
+        f_remain = open(os.path.join(path_session, 'REMAIN.txt'), 'a')
+        f_error = open(os.path.join(path_session, 'ERROR.txt'), 'a')
         Connections.ALL_Accounts += 1
         mail = user['mail']
         passwd = user['password']
+        u = f"{mail}:{passwd}\n"
         server = "imap.{0}".format(mail.split("@")[-1])
         try:
             conn = imaplib.IMAP4_SSL(server)
@@ -35,15 +40,21 @@ class Connections:
                 conn.login(mail,passwd)
             except:
                 conn = None
+                f_error.write(u)
 
         if conn is not None:
             Connections.VALID_Accounts += 1
+            f_good.write(u)
             conn.select()
             Connections.connections.append(conn)
             Connections.data_connections.append(user)
         else:
             Connections.UNVALID_Accounts += 1
+            f_bad.write(u)
 
+        f_good.close()
+        f_bad.close()
+        f_error.close()
         Connections.CHCKED_Accounts += 1
         Connections.Update_Date()
 
@@ -54,6 +65,8 @@ class Connections:
                 res, data = Connections.connections[user_index].search(None, *requests)
             except OSError:
                 break
+            except:
+                continue
             item = QTreeItem.QTreeItem(data,Connections.connections[user_index])
             item.setText(0, Connections.data_connections[user_index]['mail'])
             item.setText(1, Connections.data_connections[user_index]['password'])
@@ -123,6 +136,7 @@ class Connections:
 
     @staticmethod
     def reset():
+        Connections.data_connections = []
         Connections.connections = []
         Connections.ALL_Accounts = 0
         Connections.CHCKED_Accounts = 0
