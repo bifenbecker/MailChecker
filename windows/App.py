@@ -1,10 +1,11 @@
 import json
 import os
-import sqlite3, ThreadProc,ThreadSearch
+import re
+import Internet
+from threads import ThreadProc,ThreadSearch
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
-from Connections import *
 from Connections import Connections
 from Settings import Settings
 from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
@@ -73,10 +74,16 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         else:
             self.pushButton_Search.setEnabled(False)
 
+    def _check_latin(self,requsts: list):
+        for req in requsts:
+            if re.search(r'[а-яА-Я]', req):
+                return False
+        return True
+
+
     def search(self):
         if self.checkBox_Search.isChecked() or self.checkBox_Date.isChecked() or self.checkBox_Only_Seen.isChecked():
             if len(Connections.connections) != 0:
-                self.treeWidget.clear()
                 filtres = [self._check_only_seen(), self._check_date()]
                 text_search = [self._check_from(), self._check_subject(), self._check_body()]
                 table_request = ""
@@ -85,30 +92,43 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
                 for filter in filtres:
                     if filter[0]:
                         request = '({0} "{1}")'.format(filter[1], filter[2]).replace(' ""', '')
+                        table_req = '{0} {1},'.format(filter[1], filter[2]).replace(' ""', '')
+                        table_request += table_req
                         requests.append(request)
 
                 if self.checkBox_Search.isChecked():
                     search_req = "(OR "
                     r = 0
+                    empty_lines = 0
                     for st in text_search:
                         if st[0]:
                             r += 1
                             req = '({0} "{1}") '.format(st[1], st[2])
+                            table_req = '{0} {1},'.format(st[1], st[2])
+                            table_request += table_req
                             search_req += req
+                        else:
+                            empty_lines += 1
 
                     if r == 1:
                         search_req = search_req[4:-1]
                     else:
                         search_req = search_req[:-1] + ")"
 
-                    if re.search(r'[а-яА-Я]', search_req):
-                        App.show_warning_mes("Latin letters only")
-                    else:
+                    if empty_lines != len(text_search):
                         requests.append(search_req)
+
+                if self._check_latin(requests) and len(requests) != 0:
+                    if Internet.run_check():
+                        self.treeWidget.clear()
                         if self.thread is None:
-                            self.thread = ThreadSearch.ThreadSearch(tuple(requests))
+                            table_request = table_request[:-1]
+                            self.thread = ThreadSearch.ThreadSearch(tuple(requests), table_request)
                             self.thread.finished.connect(self.search_finish)
                             self.thread.start()
+                    else:
+                        App.show_warning_mes("Check Internet connection")
+
             else:
                 App.show_warning_mes("Load")
         else:
@@ -146,7 +166,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
 
     def show_mails_window(self,item,col):
         limit = int(self.spinBox_Amount_letters.text())
-        self.mails_window = MailsWindow.App(item,limit)
+        self.mails_window = MailsWindow.Mails(item,limit,self.path_session)
         self.mails_window.show()
 
     def show_settings_window(self):
@@ -171,12 +191,15 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.label_Active_Session.setText(self.action.objectName())
         self.path_session = os.path.join(os.getcwd(),'sessions', self.action.objectName())
         if os.path.exists(os.path.join(self.path_session,'users.json')):
-            if self.thread is None:
-                self.thread = ThreadProc.TreadProc(path=self.path_session)
-                self.thread.change_value.connect(self.set_progress_bar)
-                self.thread.finished.connect(self.succsessful_load)
-                self.thread.start()
-                self.label_status.setText("Load...")
+            if Internet.run_check():
+                if self.thread is None:
+                    self.thread = ThreadProc.TreadProc(path=self.path_session)
+                    self.thread.change_value.connect(self.set_progress_bar)
+                    self.thread.finished.connect(self.succsessful_load)
+                    self.thread.start()
+                    self.label_status.setText("Load...")
+            else:
+                App.show_warning_mes("Check Internet connection")
 
 
     def succsessful_load(self):

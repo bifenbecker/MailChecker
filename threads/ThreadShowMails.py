@@ -15,9 +15,12 @@ class ThreadShowMails(QThread):
 
 
     def run(self):
-        for uid in self.uids[0].split()[-1:-self.limit:-1]:
-            mail = Connections.get_mail(self.conn,uid)
-            print(mail)
+        lim = -1 if self.limit == 0 else self.limit
+        for uid in self.uids[0].split()[-1:-lim - 1:-1]:
+            try:
+                mail = Connections.get_mail(self.conn, uid)
+            except OSError:
+                break
             if mail is not None:
                 item = QTreeItem.QTreeItem(self.uids,self.conn,mail['content'])
                 item.setText(0, mail['data'])

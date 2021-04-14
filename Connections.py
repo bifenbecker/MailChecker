@@ -48,13 +48,16 @@ class Connections:
         Connections.Update_Date()
 
     @staticmethod
-    def get_result_filter(requests = ()):
+    def get_result_filter(table_req,requests = ()):
         for user_index in range(len(Connections.connections)):
-            res,data = Connections.connections[user_index].search('windows-1251',*requests)
+            try:
+                res, data = Connections.connections[user_index].search(None, *requests)
+            except OSError:
+                break
             item = QTreeItem.QTreeItem(data,Connections.connections[user_index])
             item.setText(0, Connections.data_connections[user_index]['mail'])
             item.setText(1, Connections.data_connections[user_index]['password'])
-            item.setText(2, 'REQ')#
+            item.setText(2, table_req)
             item.setText(3, str(len(data[0])))
             Connections.main_window.treeWidget.addTopLevelItem(item)
 
@@ -106,6 +109,8 @@ class Connections:
             content_ = part.get_payload(decode=True)
             mail = {'data': data_, 'from': from_, 'subject': subject_, 'content': content_, 'type': type}
             return mail
+        except OSError:
+            raise OSError
         except:
             return None
 

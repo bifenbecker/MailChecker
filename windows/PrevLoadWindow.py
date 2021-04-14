@@ -1,12 +1,12 @@
 import asyncio
 import json
 import os
+import Internet
 from Connections import *
-import PyQt5,MailData,ThreadProc
+from threads import ThreadProc
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
-
 from Settings import Settings
 from gui import prev_window
 from windows import App
@@ -52,11 +52,14 @@ class PrevLoad(QtWidgets.QWidget, prev_window.Ui_PrevWindow):
     def load_data(self):
         if self.f is not None:
             Connections.reset()
-            if self.thread is None:
-                self.thread = ThreadProc.TreadProc(path=self.path)
-                self.thread.change_value.connect(self.set_progress_bar)
-                self.thread.finished.connect(self.go_main_window)
-                self.thread.start()
+            if Internet.run_check():
+                if self.thread is None:
+                    self.thread = ThreadProc.TreadProc(path=self.path)
+                    self.thread.change_value.connect(self.set_progress_bar)
+                    self.thread.finished.connect(self.go_main_window)
+                    self.thread.start()
+            else:
+                App.App.show_warning_mes("Check Internet connection")
         else:
             App.App.show_warning_mes(self.lang["input_link_or_choose_file"])
 
