@@ -353,7 +353,7 @@
               </font>
              </property>
              <property name="displayFormat">
-              <string>dd.mm.yyyy</string>
+              <string>dd.MM.yyyy</string>
              </property>
             </widget>
            </item>

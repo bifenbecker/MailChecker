@@ -195,18 +195,18 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         return isFile
 
     def select_session(self):
+        action = self.sender()
+        self.path_session = os.path.join(os.getcwd(), 'sessions', action.objectName())
+        self.label_Active_Session.setText(action.objectName())
+
         if self.isFile_json_in_session():
             if Internet.run_check():
                 if self.thread is None:
                     Connections.reset()
-                    self.checkBox_Only_Seen.setEnabled(True)
-                    self.checkBox_Date.setEnabled(True)
-                    self.dateEdit_date.setEnabled(True)
-                    self.checkBox_Search.setEnabled(True)
-                    self.action = self.sender()
-                    self.label_Active_Session.setText(self.action.objectName())
-                    self.path_session = os.path.join(os.getcwd(), 'sessions', self.action.objectName())
-
+                    # self.checkBox_Only_Seen.setEnabled(True)
+                    # self.checkBox_Date.setEnabled(True)
+                    # self.dateEdit_date.setEnabled(True)
+                    # self.checkBox_Search.setEnabled(True)
                     self.thread = ThreadProc.TreadProc(path=self.path_session)
                     self.thread.change_value.connect(self.set_progress_bar)
                     self.thread.finished.connect(self.succsessful_load)
@@ -222,7 +222,10 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.progressBar.setValue(0)
         self.label_status.setText("OK")
         self.isLoad_Mails = True
-        self.search_btn_enable()
+        self.checkBox_Only_Seen.setEnabled(True)
+        self.checkBox_Date.setEnabled(True)
+        self.checkBox_Search.setEnabled(True)
+        self.dateEdit_date.setEnabled(True)
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.succsessful_load)
         self.thread = None

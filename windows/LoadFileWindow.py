@@ -71,7 +71,10 @@ class LoadFileWindow(QtWidgets.QWidget, load_file_window.Ui_Form):
         self.main_window.progressBar.setValue(0)
         self.main_window.label_status.setText("OK")
         self.main_window.isLoad_Mails = True
-        self.main_window.search_btn_enable()
+        self.main_window.checkBox_Only_Seen.setEnabled(True)
+        self.main_window.checkBox_Date.setEnabled(True)
+        self.main_window.checkBox_Search.setEnabled(True)
+        self.main_window.dateEdit_date.setEnabled(True)
         self.thread.change_value.disconnect(self.set_progress_bar)
         self.thread.finished.disconnect(self.succsessful_load)
         self.thread = None

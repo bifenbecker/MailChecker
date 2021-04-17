@@ -356,7 +356,7 @@ class Ui_MainWindow(object):
         self.treeWidget.headerItem().setText(3, _translate("MainWindow", "Amount"))
         self.groupBox_Filter.setTitle(_translate("MainWindow", "Filters"))
         self.checkBox_Date.setText(_translate("MainWindow", "Date"))
-        self.dateEdit_date.setDisplayFormat(_translate("MainWindow", "dd.mm.yyyy"))
+        self.dateEdit_date.setDisplayFormat(_translate("MainWindow", "dd.MM.yyyy"))
         self.checkBox_Only_Seen.setText(_translate("MainWindow", "Only seen"))
         self.label_display_letters_from.setText(_translate("MainWindow", "Display letters from"))
         self.groupBox_Requests.setTitle(_translate("MainWindow", "Requests"))
