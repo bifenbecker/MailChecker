@@ -7,20 +7,21 @@ from Connections import *
 class ThreadDownload(QThread):
     change_value = pyqtSignal(float)
 
-    def __init__(self,path):
+    def __init__(self,path,conn,uids):
         super().__init__()
         self.path = path
-
+        self.conn = conn
+        self.uids = uids
 
     def run(self):
-        with open("settings.json") as json_file:
-            settings = json.load(json_file)
-        download_path = settings['Save']
-        if download_path == "":
-            download_path = self.path
-        for i in range(5):
-            print(download_path)
+        proc = 100 / len(self.uids)
+        chv = proc
+        # download process
+        for uid in self.uids:
 
+            Connections.download_mail(self.conn,uid,self.path)
+            self.change_value.emit(chv)
+            chv += proc
 
     def stop(self):
         self.exec_()

@@ -50,26 +50,6 @@
     <property name="bottomMargin">
      <number>5</number>
     </property>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="pushButton_Save_Settings">
-      <property name="text">
-       <string>Save settings</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="1" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox_Theme">
       <property name="title">
@@ -156,7 +136,7 @@
          <height>71</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="5,1">
         <property name="leftMargin">
          <number>5</number>
         </property>
@@ -167,14 +147,57 @@
          <widget class="QLineEdit" name="lineEdit_Save"/>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_Browse">
-          <property name="text">
-           <string>Browse</string>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>5</number>
           </property>
-         </widget>
+          <property name="topMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>5</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButton_Browse">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_BrowseCurrentSession">
+            <property name="text">
+             <string>Browse current session</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="pushButton_Save_Settings">
+      <property name="text">
+       <string>Save settings</string>
+      </property>
      </widget>
     </item>
    </layout>

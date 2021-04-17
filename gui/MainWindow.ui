@@ -609,8 +609,8 @@
     <property name="title">
      <string>Load</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_mails"/>
+    <addaction name="actionLoad_file"/>
+    <addaction name="actionLoad_link"/>
    </widget>
    <widget class="QMenu" name="menuChoose_session">
     <property name="title">
@@ -649,6 +649,16 @@
   <action name="actionSettings">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionLoad_file">
+   <property name="text">
+    <string>Load file</string>
+   </property>
+  </action>
+  <action name="actionLoad_link">
+   <property name="text">
+    <string>Load link</string>
    </property>
   </action>
  </widget>

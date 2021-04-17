@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidget, QAbstractItemView, QFileDialog, QDialog, QMessageBox
 from Connections import Connections
 from Settings import Settings
-from windows import PrevLoadWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
+from windows import LoadLinkWindow,LoadFileWindow, AddSessionWindow, DeleteSessionWindow, SettingsWindow, MailsWindow, MailWindow
 from gui import MainWindow
 
 
@@ -35,7 +35,8 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.thread = None
         self.path_session = None
         self.setup()
-        self.actionLoad_mails.triggered.connect(self.Load)
+        self.actionLoad_file.triggered.connect(self.load_from_file)
+        self.actionLoad_link.triggered.connect(self.load_from_link)
         self.actionAdd_Session.triggered.connect(self.add_session)
         self.actionDelete_Session.triggered.connect(self.delete_session)
         self.actionSettings.triggered.connect(self.show_settings_window)
@@ -166,7 +167,9 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
 
     def show_mails_window(self,item,col):
         limit = int(self.spinBox_Amount_letters.text())
-        self.mails_window = MailsWindow.Mails(item,limit,self.path_session)
+        lim = -1 if limit == 0 else limit
+        uids = item.uids[0].split()[-1:-lim - 1:-1]
+        self.mails_window = MailsWindow.Mails(item,uids,self.path_session)
         self.mails_window.show()
 
     def show_settings_window(self):
@@ -192,22 +195,25 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         return isFile
 
     def select_session(self):
-        Connections.reset()
-        self.checkBox_Only_Seen.setEnabled(True)
-        self.checkBox_Date.setEnabled(True)
-        self.dateEdit_date.setEnabled(True)
-        self.checkBox_Search.setEnabled(True)
-        self.action = self.sender()
-        self.label_Active_Session.setText(self.action.objectName())
-        self.path_session = os.path.join(os.getcwd(),'sessions', self.action.objectName())
         if self.isFile_json_in_session():
             if Internet.run_check():
                 if self.thread is None:
+                    Connections.reset()
+                    self.checkBox_Only_Seen.setEnabled(True)
+                    self.checkBox_Date.setEnabled(True)
+                    self.dateEdit_date.setEnabled(True)
+                    self.checkBox_Search.setEnabled(True)
+                    self.action = self.sender()
+                    self.label_Active_Session.setText(self.action.objectName())
+                    self.path_session = os.path.join(os.getcwd(), 'sessions', self.action.objectName())
+
                     self.thread = ThreadProc.TreadProc(path=self.path_session)
                     self.thread.change_value.connect(self.set_progress_bar)
                     self.thread.finished.connect(self.succsessful_load)
                     self.thread.start()
                     self.label_status.setText("Load...")
+                else:
+                    App.show_warning_mes("Wait ending of process")
             else:
                 App.show_warning_mes("Check Internet connection")
 
@@ -221,16 +227,24 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.thread.finished.disconnect(self.succsessful_load)
         self.thread = None
 
+
     def set_progress_bar(self,value):
         self.progressBar.setValue(value)
 
-    def Load(self):
+    def load_from_file(self):
         if self.path_session is not None:
-            self.prev_load_menu = PrevLoadWindow.PrevLoad(self.path_session,self)
-            self.prev_load_menu.setWindowModality(Qt.ApplicationModal)
-            self.prev_load_menu.show()
+            self.load_from_file_window = LoadFileWindow.LoadFileWindow(self,self.path_session)
+            self.load_from_file_window.show()
         else:
             App.show_warning_mes(self.lang["select_session"])
+
+    def load_from_link(self):
+        if self.path_session is not None:
+            self.load_from_link_window = LoadLinkWindow.LoadLinkWindow()
+            self.load_from_link_window.show()
+        else:
+            App.show_warning_mes(self.lang["select_session"])
+
 
     @staticmethod
     def show_warning_mes(mes):

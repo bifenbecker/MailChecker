@@ -2,7 +2,7 @@ import json
 import os
 import sys
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-
+from windows import App
 from Settings import Settings
 from gui import settings_window
 from PyQt5 import QtWidgets, QtGui
@@ -13,10 +13,17 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
         self.setupUi(self)
         self.window = main_window
         self.pushButton_Save_Settings.clicked.connect(self.save_settings)
+        self.pushButton_BrowseCurrentSession.clicked.connect(self.browse_current_session)
         self.pushButton_Browse.clicked.connect(self.browse)
         self.default_settings()
         Settings.setUp(self)
         self.is_save_path_switched = False
+
+    def browse_current_session(self):
+        if self.window.path_session is None:
+            App.App.show_warning_mes("Select session")
+        else:
+            self.lineEdit_Save.setText(self.window.path_session)
 
     def default_settings(self):
         with open('settings.json') as file:
@@ -37,7 +44,7 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
 
     def browse(self):
         save_path_download = QFileDialog.getExistingDirectory(self,"Choose")
-        self.lineEdit_Save_Path.setText(save_path_download)
+        self.lineEdit_Save.setText(save_path_download)
         self.is_save_path_switched = True
 
     def load_theme(self):
@@ -77,8 +84,8 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
                             settings[obj.parent().parent().objectName().split("_")[-1]] = obj.objectName().split("_")[-1]
                     if isinstance(obj,QtWidgets.QLineEdit):
                         if self.is_save_path_switched:
-                            if os.path.exists(self.lineEdit_Save_Path.text()):
-                                settings[obj.parent().parent().objectName().split("_")[-1]] = self.lineEdit_Save_Path.objectName().split("_")[-1]
+                            if os.path.exists(self.lineEdit_Save.text()):
+                                settings[obj.parent().parent().objectName().split("_")[-1]] = self.lineEdit_Save.text()
                             else:
                                 msgBox = QMessageBox()
                                 msgBox.setIcon(QMessageBox.Information)

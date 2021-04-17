@@ -5,18 +5,16 @@ from Connections import *
 
 class ThreadShowMails(QThread):
 
-    def __init__(self,conn,uids,limit,window):
+    def __init__(self,conn,uids,window):
         super().__init__()
         self.isStop = False
         self.conn = conn
         self.uids = uids
         self.window = window
-        self.limit = limit
 
 
     def run(self):
-        lim = -1 if self.limit == 0 else self.limit
-        for uid in self.uids[0].split()[-1:-lim - 1:-1]:
+        for uid in self.uids:
             try:
                 mail = Connections.get_mail(self.conn, uid)
             except OSError:
