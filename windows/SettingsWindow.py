@@ -2,7 +2,6 @@ import json
 import os
 import sys
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from windows import App
 from Settings import Settings
 from gui import settings_window
 from PyQt5 import QtWidgets, QtGui
@@ -21,7 +20,7 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
 
     def browse_current_session(self):
         if self.window.path_session is None:
-            App.App.show_warning_mes("Select session")
+            self.show_warning_mes("Select session")
         else:
             self.lineEdit_Save.setText(self.window.path_session)
 
@@ -97,3 +96,12 @@ class App(QtWidgets.QWidget,settings_window.Ui_SettingsWindow):
                         else:
                             settings[obj.parent().parent().objectName().split("_")[-1]] = ""
         return settings
+
+    def show_warning_mes(self,mes):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(mes)
+        msgBox.setStyleSheet("font-size:12px;\n")
+        msgBox.setWindowTitle("Warning")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        returnValue = msgBox.exec()

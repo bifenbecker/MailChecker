@@ -33,7 +33,6 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.init_sesions()
         self.pushButton_Search.setEnabled(False)
         self.thread = None
-        self.path_session = None
         self.setup()
         self.actionLoad_file.triggered.connect(self.load_from_file)
         self.actionLoad_link.triggered.connect(self.load_from_link)
@@ -48,6 +47,7 @@ class App(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow):
         self.checkBox_Search.clicked.connect(self.enable_search_lines)
         self.isLoad_Mails = False
         Connections.load_main_window(self)
+        self.path_session = None
         self.show()
 
     def setup(self):
